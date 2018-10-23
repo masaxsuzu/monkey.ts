@@ -1,7 +1,7 @@
 import { Token, TokenType } from "../token/token";
 
 export class Lexer {
-    public constructor(input:string) {
+    public constructor(input: string) {
         this._input = input.split('');
         this._current = "";
         this._currentPosition = 0;
@@ -9,53 +9,53 @@ export class Lexer {
 
         this.Read()
     }
-    public NextToken():Token{
-        var t :Token
+    public NextToken(): Token {
+        var t: Token
 
         this.SkipWhiteSpace()
 
         let current = this._current
         switch (current) {
             case "=":
-                t = new Token(TokenType.ASSIGN,current)
-                break;       
+                t = new Token(TokenType.ASSIGN, current)
+                break;
             case ";":
-                t = new Token(TokenType.SEMICOLON,current)
-                break;  
+                t = new Token(TokenType.SEMICOLON, current)
+                break;
             case "(":
-                t = new Token(TokenType.LPAREN,current)
-                break;  
+                t = new Token(TokenType.LPAREN, current)
+                break;
             case ")":
-                t = new Token(TokenType.RPAREN,current)
-                break;  
+                t = new Token(TokenType.RPAREN, current)
+                break;
             case ",":
-                t = new Token(TokenType.COMMA,current)
-                break;  
+                t = new Token(TokenType.COMMA, current)
+                break;
             case "+":
-                t = new Token(TokenType.PlUS,current)
-                break;  
+                t = new Token(TokenType.PlUS, current)
+                break;
             case "{":
-                t = new Token(TokenType.LBRACE,current)
-                break;  
+                t = new Token(TokenType.LBRACE, current)
+                break;
             case "}":
-                t = new Token(TokenType.RBRACE,current)
-                break;  
+                t = new Token(TokenType.RBRACE, current)
+                break;
             case "":
-                t = new Token(TokenType.EOF,current)
+                t = new Token(TokenType.EOF, current)
                 break;
             default:
                 // ch1p12: if call ReadXXX, then return here,
                 // because Read() is already called.
-                if (Lexer.isLetter(current)){
+                if (Lexer.isLetter(current)) {
                     let literal = this.ReadIdentifier();
                     let type = Token.LookupIdent(literal);
-                    return new Token(type,literal);
+                    return new Token(type, literal);
                 }
-                else if(Lexer.isDisit(current)){
+                else if (Lexer.isDisit(current)) {
                     let literal = this.ReadNumber();
-                    return new Token(TokenType.INT,literal);
-                }else {
-                    t = new Token(TokenType.ILLEGAL,current)
+                    return new Token(TokenType.INT, literal);
+                } else {
+                    t = new Token(TokenType.ILLEGAL, current)
                     break;
                 }
         }
@@ -63,64 +63,64 @@ export class Lexer {
         return t
     }
 
-    private Read(){
-        if (this._nextPosition >= this._input.length){
+    private Read() {
+        if (this._nextPosition >= this._input.length) {
             this._current = "";
-        }else{
+        } else {
             this._current = this._input[`${this._nextPosition}`];
         }
         this._currentPosition = this._nextPosition;
-        this._nextPosition +=1;
+        this._nextPosition += 1;
 
     }
 
-    private ReadIdentifier():string{
+    private ReadIdentifier(): string {
         let pos = this._currentPosition
         while (Lexer.isLetter(this._current)) {
             this.Read()
         }
-        
-        let v = this._input.slice(pos,this._currentPosition)
-        
+
+        let v = this._input.slice(pos, this._currentPosition)
+
         return v.join('')
     }
 
-    private ReadNumber():string{
+    private ReadNumber(): string {
         let pos = this._currentPosition
         while (Lexer.isDisit(this._current)) {
             this.Read()
         }
 
-        let v = this._input.slice(pos,this._currentPosition)
+        let v = this._input.slice(pos, this._currentPosition)
 
         return v.join('')
     }
 
 
-    private SkipWhiteSpace(){
-        while(this._current == " " || this._current == "\t" || this._current == "\n" || this._current == "\r"){
+    private SkipWhiteSpace() {
+        while (this._current == " " || this._current == "\t" || this._current == "\n" || this._current == "\r") {
             this.Read()
         }
     }
 
-    private static isLetter(s :string): boolean{
+    private static isLetter(s: string): boolean {
         let code = s.charCodeAt(0)
         let a = 97
-        let z = a + 26 -1
+        let z = a + 26 - 1
         let A = 65
-        let Z = A + 26 -1
+        let Z = A + 26 - 1
         return (a <= code && code <= z) || (A <= code && code <= Z);
     }
 
-    private static isDisit(s :string): boolean{
+    private static isDisit(s: string): boolean {
         let code = s.charCodeAt(0)
         let zero = 48
         return (48 <= code && code <= zero + 9);
     }
 
-    private _input :string[];
-    private _currentPosition : number;
-    private _nextPosition : number;
-    private _current :string;
+    private _input: string[];
+    private _currentPosition: number;
+    private _nextPosition: number;
+    private _current: string;
 }
 
