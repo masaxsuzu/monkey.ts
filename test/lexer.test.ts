@@ -4,9 +4,9 @@ import {Lexer} from "../src/lexer/lexer"
 
 
 describe ('TestNextToken',()=>{
-    let input = "=+(){},;"
+    let input = new Lexer("=+(){},;")
 
-    let tests: [TokenType,string][] =
+    let wants: [TokenType,string][] =
     [
         [TokenType.ASSIGN,"="],
         [TokenType.PlUS,"+"],
@@ -19,12 +19,10 @@ describe ('TestNextToken',()=>{
         [TokenType.EOF,""],
     ]
     it('Case1',() =>{
-        let l = new Lexer(input)
-
-        tests.forEach(tt => {
-            let token = l.NextToken()
-            assert.strictEqual(token.Type,tt["0"]);
-            assert.strictEqual(token.Literal,tt["1"]);
+        wants.forEach(want => {
+            let token = input.NextToken()
+            assert.equal(token.Type,want["0"]);
+            assert.strictEqual(token.Literal,want["1"]);
         })
     })
 });

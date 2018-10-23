@@ -11,36 +11,37 @@ export class Lexer {
     }
     public NextToken():Token{
         var t :Token
-        switch (this._current) {
+        let current = this._current
+        switch (current) {
             case "=":
-                t = new Token(TokenType.ASSIGN,this._current)
+                t = new Token(TokenType.ASSIGN,current)
                 break;       
             case ";":
-                t = new Token(TokenType.SEMICOLON,this._current)
+                t = new Token(TokenType.SEMICOLON,current)
                 break;  
             case "(":
-                t = new Token(TokenType.LPAREN,this._current)
+                t = new Token(TokenType.LPAREN,current)
                 break;  
             case ")":
-                t = new Token(TokenType.RPAREN,this._current)
+                t = new Token(TokenType.RPAREN,current)
                 break;  
             case ",":
-                t = new Token(TokenType.COMMA,this._current)
+                t = new Token(TokenType.COMMA,current)
                 break;  
             case "+":
-                t = new Token(TokenType.PlUS,this._current)
+                t = new Token(TokenType.PlUS,current)
                 break;  
             case "{":
-                t = new Token(TokenType.LBRACE,this._current)
+                t = new Token(TokenType.LBRACE,current)
                 break;  
             case "}":
-                t = new Token(TokenType.RBRACE,this._current)
+                t = new Token(TokenType.RBRACE,current)
                 break;  
             case "":
-                t = new Token(TokenType.EOF,this._current)
+                t = new Token(TokenType.EOF,current)
                 break;
             default:
-                t = new Token(TokenType.ILLEGAL,this._current)
+                t = new Token(TokenType.ILLEGAL,current)
                 break;
         }
         this.Read()
@@ -51,7 +52,7 @@ export class Lexer {
         if (this._nextPosition >= this._input.length){
             this._current = "";
         }else{
-            this._current = this._input[""+this._nextPosition];
+            this._current = this._input[`${this._nextPosition}`];
         }
         this._currentPosition = this._nextPosition;
         this._nextPosition +=1;
