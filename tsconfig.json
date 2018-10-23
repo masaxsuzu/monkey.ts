@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+      "module": "commonjs",
+      "target": "es6",
+      "noImplicitAny": false,
+      "sourceMap": true,
+      "watch" : true,
+      "outDir": "bin"
+  },
+  "include": [
+      "src/*.ts",
+      "src/token/*.ts",
+      "test",
+  ],
+  "exclude": [
+      "node_modules"
+  ]
+}
