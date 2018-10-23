@@ -10,7 +10,7 @@
   "include": [
       "src/*.ts",
       "src/token/*.ts",
-      "test",
+      "test/*.ts",
   ],
   "exclude": [
       "node_modules"
