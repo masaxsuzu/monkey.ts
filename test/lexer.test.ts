@@ -87,6 +87,30 @@ describe('TestNextToken', () => {
                 [TokenType.EOF, ""],
             ]
         },
+        {
+            name: "If-ELSE",
+            input: "if (5 < 10){return false;} else {return true;}",
+            wants: [
+                [TokenType.IF, "if"],
+                [TokenType.LPAREN, "("],
+                [TokenType.INT, "5"],
+                [TokenType.LT, "<"],
+                [TokenType.INT, "10"],
+                [TokenType.RPAREN, ")"],
+                [TokenType.LBRACE, "{"],
+                [TokenType.RETURN, "return"],
+                [TokenType.FALSE, "false"],
+                [TokenType.SEMICOLON, ";"],
+                [TokenType.RBRACE, "}"],
+                [TokenType.ELSE, "else"],
+                [TokenType.LBRACE, "{"],
+                [TokenType.RETURN, "return"],
+                [TokenType.TRUE, "true"],
+                [TokenType.SEMICOLON, ";"],
+                [TokenType.RBRACE, "}"],
+                [TokenType.EOF, ""],
+            ]
+        },
     ]
 
     tests.forEach(tt => {

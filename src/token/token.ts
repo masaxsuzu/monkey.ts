@@ -14,7 +14,7 @@ export enum TokenType {
 
     LT = "<",
     GT = ">",
-    
+
     COMMA = ",",
     SEMICOLON = ";",
 
@@ -23,8 +23,14 @@ export enum TokenType {
     LBRACE = "{",
     RBRACE = "}",
 
+    TRUE = "TRUE",
+    FALSE = "FALSE",
+
     FUNCTION = "FUNCTION",
     LET = "LET",
+    IF = "IF",
+    ELSE = "ELSE",
+    RETURN = "RETURN",
 }
 
 export class Token {
@@ -36,6 +42,11 @@ export class Token {
     private static KeyWords = new Map<string, TokenType>([
         ["fn", TokenType.FUNCTION],
         ["let", TokenType.LET],
+        ["true",TokenType.TRUE],
+        ["false",TokenType.FALSE],
+        ["if",TokenType.IF],
+        ["else",TokenType.ELSE],
+        ["return",TokenType.RETURN],
     ]);
 
     static LookupIdent(i: string): TokenType {
