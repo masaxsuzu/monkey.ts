@@ -12,6 +12,9 @@ export enum TokenType {
     ASTERISK = "*",
     SLASH = "/",
 
+    EQ = "==",
+    NOT_EQ = "!=",
+
     LT = "<",
     GT = ">",
 

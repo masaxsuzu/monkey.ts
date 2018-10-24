@@ -17,7 +17,15 @@ export class Lexer {
         let current = this._current
         switch (current) {
             case "=":
-                t = new Token(TokenType.ASSIGN, current)
+                if (this.Peek() == "=") {
+                    let s = this._current
+                    this.Read()
+                    let literal = s + this._current
+
+                    t = new Token(TokenType.EQ, s + this._current)
+                } else {
+                    t = new Token(TokenType.ASSIGN, current)
+                }
                 break;
             case ";":
                 t = new Token(TokenType.SEMICOLON, current)
@@ -35,22 +43,30 @@ export class Lexer {
                 t = new Token(TokenType.PlUS, current)
                 break;
             case "-":
-                t = new Token(TokenType.MINUS,current)
+                t = new Token(TokenType.MINUS, current)
                 break;
             case "!":
-                t = new Token(TokenType.BANG,current)
+                if (this.Peek() == "=") {
+                    let s = this._current
+                    this.Read()
+                    let literal = s + this._current
+
+                    t = new Token(TokenType.NOT_EQ, s + this._current)
+                } else {
+                    t = new Token(TokenType.BANG, current)
+                }
                 break;
             case "/":
-                t = new Token(TokenType.SLASH,current)
+                t = new Token(TokenType.SLASH, current)
                 break;
             case "*":
-                t = new Token(TokenType.ASTERISK,current)
+                t = new Token(TokenType.ASTERISK, current)
                 break
             case "<":
-                t = new Token(TokenType.LT,current)
+                t = new Token(TokenType.LT, current)
                 break;
             case ">":
-                t = new Token(TokenType.GT,current);
+                t = new Token(TokenType.GT, current);
                 break;
             case "{":
                 t = new Token(TokenType.LBRACE, current)
@@ -114,6 +130,12 @@ export class Lexer {
         return v.join('')
     }
 
+    private Peek(): string {
+        if (this._nextPosition >= this._input.length) {
+            return ""
+        }
+        return this._input[`${this._nextPosition}`]
+    }
 
     private SkipWhiteSpace() {
         while (this._current == " " || this._current == "\t" || this._current == "\n" || this._current == "\r") {

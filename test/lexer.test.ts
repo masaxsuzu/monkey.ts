@@ -111,6 +111,21 @@ describe('TestNextToken', () => {
                 [TokenType.EOF, ""],
             ]
         },
+        {
+            name: "EQUAL/NOTEQUAL",
+            input: "10 == 10; 10 != 9;",
+            wants: [
+                [TokenType.INT, "10"],
+                [TokenType.EQ, "=="],
+                [TokenType.INT, "10"],
+                [TokenType.SEMICOLON, ";"],
+                [TokenType.INT, "10"],
+                [TokenType.NOT_EQ, "!="],
+                [TokenType.INT, "9"],
+                [TokenType.SEMICOLON, ";"],
+                [TokenType.EOF, ""],
+            ]
+        },
     ]
 
     tests.forEach(tt => {
