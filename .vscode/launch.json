@@ -7,8 +7,8 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "run js",
-            "args": ["src/HelloWorld.js"]
+            "name": "monkey",
+            "args": ["bin/src/monkey.js"]
         }
     ]
 }
