@@ -34,6 +34,24 @@ export class Lexer {
             case "+":
                 t = new Token(TokenType.PlUS, current)
                 break;
+            case "-":
+                t = new Token(TokenType.MINUS,current)
+                break;
+            case "!":
+                t = new Token(TokenType.BANG,current)
+                break;
+            case "/":
+                t = new Token(TokenType.SLASH,current)
+                break;
+            case "*":
+                t = new Token(TokenType.ASTERISK,current)
+                break
+            case "<":
+                t = new Token(TokenType.LT,current)
+                break;
+            case ">":
+                t = new Token(TokenType.GT,current);
+                break;
             case "{":
                 t = new Token(TokenType.LBRACE, current)
                 break;

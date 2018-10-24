@@ -10,7 +10,7 @@ describe('TestNextToken', () => {
     }
     let tests: test[] = [
         {
-            name: "Easy",
+            name: "Easy tokens",
             input: "=+(){},;",
             wants: [
                 [TokenType.ASSIGN, "="],
@@ -37,7 +37,7 @@ describe('TestNextToken', () => {
             ]
         } as test,
         {
-            name: "Function",
+            name: "Function keyword",
             input: `let add = fn(x, y){x + y}; let ret = add(5,10);`,
             wants: [
                 [TokenType.LET, "let"],
@@ -68,6 +68,25 @@ describe('TestNextToken', () => {
                 [TokenType.EOF, ""],
             ]
         } as test,
+        {
+            name: "Operators",
+            input: "!-/*5;5<10>5;",
+            wants: [
+                [TokenType.BANG, "!"],
+                [TokenType.MINUS, "-"],
+                [TokenType.SLASH, "/"],
+                [TokenType.ASTERISK, "*"],
+                [TokenType.INT, "5"],
+                [TokenType.SEMICOLON, ";"],
+                [TokenType.INT, "5"],
+                [TokenType.LT, "<"],
+                [TokenType.INT, "10"],
+                [TokenType.GT, ">"],
+                [TokenType.INT, "5"],
+                [TokenType.SEMICOLON, ";"],
+                [TokenType.EOF, ""],
+            ]
+        },
     ]
 
     tests.forEach(tt => {
