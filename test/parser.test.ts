@@ -26,7 +26,9 @@ describe('ParseProgram', () => {
             let p = parser.Parser.New(l);
             let program = p.ToProgram();
 
-            chai.expect(program,"parser.ToProgram()").not.null;
+            chai.expect(program,"p.ToProgram()").not.null;
+            chai.expect(program.Statements,"p.ToProgram().Statements").not.null;
+            chai.expect(program.Statements.length,"p.ToProgram().Statements.length").equals(tt.wants.length);
             tt.wants.forEach((want,index) => {
                 let statement:ast.LetStatement = program.Statements[`${index}`];
                 
