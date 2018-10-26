@@ -41,6 +41,18 @@ export class LetStatement {
     public TokenLiteral(): string { return this.Token.Literal; }
 }
 
+export class ReturnStatement {
+    Token: Token
+    ReturnValue: Expression
+
+    public StatementNode() { }
+
+    public Node():Node{
+        return this;
+    }
+    public TokenLiteral(): string { return this.Token.Literal; }
+}
+
 export class Identifier {
     Token: Token
     Value: string
