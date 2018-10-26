@@ -4,6 +4,29 @@ import * as lexer from "../src/lexer/lexer"
 import * as ast from "../src/ast/ast"
 import * as parser from "../src/parser/parser"
 
+
+class To{
+    public static ProgramFrom(statements:ast.Statement[]): ast.Program{
+        let p :ast.Program = new ast.Program();
+
+        p.Statements = statements;
+        return p;
+    }
+    public static LetStatementFrom(t:token.Token,i1 :ast.Identifier,i2:ast.Identifier): ast.LetStatement{
+        let ls :ast.LetStatement = new ast.LetStatement();
+        ls.Token = t;
+        ls.Name = i1;
+        ls.Value =i2;
+        return ls;
+    }
+    public static ReturnStatementFrom(t:token.Token,i1 :ast.Identifier): ast.ReturnStatement{
+        let rs :ast.ReturnStatement= new ast.ReturnStatement();
+        rs.Token = t;
+        rs.ReturnValue =i1;
+        return rs;
+    }
+}
+
 describe('ParseLetStatements', () => {
     interface test {
         name: string;
@@ -100,4 +123,43 @@ describe('ParseReturnStatements', () => {
             chai.expect(e.length,"num of errors").equal(0,e.toString());
         })
     })
+})
+
+describe('ProgramToString',()=>{
+    interface test{
+        name:string
+        input:ast.Program
+        want:string
+    }
+    let tests:test[] = [
+        {
+                name:"1 let statement",
+                input: To.ProgramFrom(
+                    [
+                        To.LetStatementFrom(
+                            new token.Token(token.TokenType.LET,"let"),
+                            new ast.Identifier(new token.Token(token.TokenType.IDENT,"myVar"),"myVar"),
+                            new ast.Identifier(new token.Token(token.TokenType.IDENT,"anotherVar"),"anotherVar")),
+                    ]
+                ),
+                want:'let myVar = anotherVar;',
+        }as test,
+        {
+            name:"1 return statement",
+            input: To.ProgramFrom(
+                [
+                    To.ReturnStatementFrom(
+                        new token.Token(token.TokenType.RETURN,"return"),
+                        new ast.Identifier(new token.Token(token.TokenType.IDENT,"x"),"x"),
+                    ),
+                ]),
+            want:'return x;',
+    }as test,
+    ];
+
+    tests.forEach(tt => {
+        it(tt.name,() =>{
+            chai.expect(tt.input.String()).equals(tt.want)
+        });
+    });
 })
