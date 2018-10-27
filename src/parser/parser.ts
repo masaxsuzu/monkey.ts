@@ -19,9 +19,9 @@ export class Parser {
     private lex: lexer.Lexer;
     private currentToken: token.Token;
     private peekToken: token.Token;
-    private erros: string[];
-    private prefixParsingFuncrions: Map<token.TokenType, prefixParsingFunction>;
-    private infixParsingFuncrions: Map<token.TokenType, infixParsingFunction>;
+    private errors: string[];
+    private prefixParsingFunctions: Map<token.TokenType, prefixParsingFunction>;
+    private infixParsingFunctions: Map<token.TokenType, infixParsingFunction>;
 
     public static New(l: lexer.Lexer): Parser {
         let p = new Parser(l);
@@ -33,12 +33,12 @@ export class Parser {
 
     private constructor(l: lexer.Lexer) {
         this.lex = l;
-        this.erros = [];
-        this.prefixParsingFuncrions = new Map();
-        this.infixParsingFuncrions = new Map();
+        this.errors = [];
+        this.prefixParsingFunctions = new Map();
+        this.infixParsingFunctions = new Map();
         this.currentToken = null;
 
-        // "this" is lost if class method is dilectly used as callback.
+        // "this" is lost if class method is directly used as callback.
         // https://kuroeveryday.blogspot.com/2015/04/this.html.
         
         this.registerPrefix(token.TokenType.IDENT,() =>{return this.parseIdentifier()});
@@ -59,7 +59,7 @@ export class Parser {
     }
 
     public Errors(): string[] {
-        return this.erros;
+        return this.errors;
     }
 
     private ParseStatement(): ast.Statement {
@@ -123,7 +123,7 @@ export class Parser {
 
     private ParseExpression(p: Priority):ast.Expression {
 
-        let prefix = this.prefixParsingFuncrions.get(this.currentToken.Type);
+        let prefix = this.prefixParsingFunctions.get(this.currentToken.Type);
         
         return prefix();
     }
@@ -153,14 +153,14 @@ export class Parser {
     }
     private peekError(t: token.TokenType) {
         let e = `expected next token to be ${t},got ${this.peekToken.Type} instead`;
-        this.erros.push(e);
+        this.errors.push(e);
     }
 
     private registerPrefix(t: token.TokenType, f: prefixParsingFunction) {
-        this.prefixParsingFuncrions.set(t, f);
+        this.prefixParsingFunctions.set(t, f);
     }
     private registerInfix(t: token.TokenType, f: infixParsingFunction) {
-        this.infixParsingFuncrions.set(t, f);
+        this.infixParsingFunctions.set(t, f);
     }
 
 }

@@ -125,7 +125,7 @@ describe('ParseReturnStatements', () => {
     })
 })
 
-describe('IndentifilerExpression',()=>{
+describe('IdentifierExpression',()=>{
     interface test{
         name:string
         input:string
