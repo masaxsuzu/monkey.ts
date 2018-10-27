@@ -125,6 +125,35 @@ describe('ParseReturnStatements', () => {
     })
 })
 
+describe('IndentifilerExpression',()=>{
+    interface test{
+        name:string
+        input:string
+        want:string
+    }
+    let tests:test[] = [
+        {
+                name:"1 expression statement",
+                input:"foobar;",
+                want:"foobar",
+        }as test,
+    ];
+
+    tests.forEach(tt => {
+        it(tt.name,() =>{
+            let l = new lexer.Lexer(tt.input);
+            let p = parser.Parser.New(l);
+            let program = p.ToProgram();
+            chai.expect(program.Statements.length).equal(1);
+
+            let ex:ast.ExpressionStatement = program.Statements[0] as ast.ExpressionStatement;
+            chai.expect(program.Statements['0']).is.not.null;
+            chai.expect(ex.Token.Type).equal(token.TokenType.IDENT);
+            chai.expect(ex.String()).equal(tt.want);
+        });
+    });  
+})
+
 describe('ProgramToString',()=>{
     interface test{
         name:string

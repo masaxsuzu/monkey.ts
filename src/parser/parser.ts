@@ -1,12 +1,27 @@
 import * as token from "../token/token"
 import * as lexer from "../lexer/lexer"
 import * as ast from "../ast/ast"
+import { addListener } from "cluster";
 
+type prefixParsingFunction = () => ast.Expression;
+type infixParsingFunction = (ex: ast.Expression) => ast.Expression;
+
+enum Priority {
+    LOWEST = 0,
+    EQUALS,
+    LESSGREATER,
+    SUM,
+    PRODUCT,
+    PREFIX,
+    CALL,
+}
 export class Parser {
     private lex: lexer.Lexer;
     private currentToken: token.Token;
     private peekToken: token.Token;
     private erros: string[];
+    private prefixParsingFuncrions: Map<token.TokenType, prefixParsingFunction>;
+    private infixParsingFuncrions: Map<token.TokenType, infixParsingFunction>;
 
     public static New(l: lexer.Lexer): Parser {
         let p = new Parser(l);
@@ -19,6 +34,14 @@ export class Parser {
     private constructor(l: lexer.Lexer) {
         this.lex = l;
         this.erros = [];
+        this.prefixParsingFuncrions = new Map();
+        this.infixParsingFuncrions = new Map();
+        this.currentToken = null;
+
+        // "this" is lost if class method is dilectly used as callback.
+        // https://kuroeveryday.blogspot.com/2015/04/this.html.
+        
+        this.registerPrefix(token.TokenType.IDENT,() =>{return this.parseIdentifier()});
     }
 
     public ToProgram(): ast.Program {
@@ -47,7 +70,7 @@ export class Parser {
             case token.TokenType.RETURN:
                 return this.ParseReturnStatement();
             default:
-                return null;
+                return this.ParseExpressionStatement();
                 break;
         }
     }
@@ -72,18 +95,41 @@ export class Parser {
         return ls;
     }
 
-    private ParseReturnStatement():ast.ReturnStatement{
-        let s :ast.ReturnStatement = new ast.ReturnStatement();
+    private ParseReturnStatement(): ast.ReturnStatement {
+        let s: ast.ReturnStatement = new ast.ReturnStatement();
         s.Token = this.currentToken;
 
         this.NextToken();
 
         // TODO as of now, skip if current token is not SEMICOLON.
-        while(!this.currentTokenIs(token.TokenType.SEMICOLON)){
+        while (!this.currentTokenIs(token.TokenType.SEMICOLON)) {
             this.NextToken();
         }
 
         return s;
+    }
+
+    private ParseExpressionStatement(): ast.ExpressionStatement {
+        let se = new ast.ExpressionStatement();
+        se.Token = this.currentToken;
+        se.Expression = this.ParseExpression(Priority.LOWEST);
+
+        if (this.peekTokenIs(token.TokenType.SEMICOLON)) {
+            this.NextToken();
+        }
+
+        return se;
+    }
+
+    private ParseExpression(p: Priority):ast.Expression {
+
+        let prefix = this.prefixParsingFuncrions.get(this.currentToken.Type);
+        
+        return prefix();
+    }
+
+    private parseIdentifier():ast.Identifier{
+        return new ast.Identifier(this.currentToken,this.currentToken.Literal);
     }
 
     private NextToken() {
@@ -109,4 +155,12 @@ export class Parser {
         let e = `expected next token to be ${t},got ${this.peekToken.Type} instead`;
         this.erros.push(e);
     }
+
+    private registerPrefix(t: token.TokenType, f: prefixParsingFunction) {
+        this.prefixParsingFuncrions.set(t, f);
+    }
+    private registerInfix(t: token.TokenType, f: infixParsingFunction) {
+        this.infixParsingFuncrions.set(t, f);
+    }
+
 }

@@ -28,7 +28,7 @@ export class Program {
         return "";
     }
 
-    public String(): string{
+    public String(): string {
         let s = "";
         this.Statements.forEach(element => {
             s += (element.Node().String());
@@ -49,8 +49,8 @@ export class LetStatement {
     }
     public TokenLiteral(): string { return this.Token.Literal; }
 
-    public String():string{
-       return `${this.TokenLiteral()} ${this.Name.String()} = ${this.Value.Node().String()};`
+    public String(): string {
+        return `${this.TokenLiteral()} ${this.Name.String()} = ${this.Value.Node().String()};`
     }
 }
 
@@ -65,9 +65,9 @@ export class ReturnStatement {
     }
     public TokenLiteral(): string { return this.Token.Literal; }
 
-    public String():string{
+    public String(): string {
         return `${this.TokenLiteral()} ${this.ReturnValue.Node().String()};`
-     }
+    }
 
 }
 
@@ -78,7 +78,10 @@ export class ExpressionStatement {
     public StatementNode() { }
     public TokenLiteral() { return this.Token.Literal; }
 
-    public String(): string{
+    public Node(): Node {
+        return this;
+    }
+    public String(): string {
         return this.Expression.Node().String();
     }
 }
@@ -91,12 +94,12 @@ export class Identifier {
         this.Token = t;
         this.Value = v;
     }
-    public Node():Node{
+    public Node(): Node {
         return this;
     }
     public ExpressionNode() { }
     public TokenLiteral(): string { return this.Token.Literal; }
-    public String():string{
+    public String(): string {
         return this.Value;
     }
 }
