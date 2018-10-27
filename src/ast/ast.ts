@@ -166,3 +166,46 @@ export class Bool {
     TokenLiteral(): string { return this.Token.Literal; }
     String(): string { return this.Token.Literal; }
 }
+
+export class IfExpression {
+    Token: Token
+    Condition: Expression
+    Consequence: BlockStatement
+    Alternative: BlockStatement
+
+    ExpressionNode() { }
+    TokenLiteral(): string { return this.Token.Literal; }
+    Node(): Node {
+        return this;
+    }
+    String(): string {
+        var out = "if";
+        out += this.Condition.Node().String();
+        out += " "
+        out += this.Consequence.Node().String();
+
+        if (this.Alternative != null) {
+            out += " else "
+            out += this.Alternative.Node().String();
+        }
+
+        return out;
+    }
+}
+
+export class BlockStatement {
+    Token: Token
+    Statements: Statement[]
+
+    Node(): Node { return this; }
+    StatementNode() { }
+    TokenLiteral(): string { return this.Token.Literal; }
+    String(): string {
+        var out = "";
+
+        this.Statements.forEach(s => {
+            out += s.Node().String();
+        });
+        return out;
+    }
+}

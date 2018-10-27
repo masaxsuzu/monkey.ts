@@ -61,6 +61,7 @@ export class Parser {
         this.registerPrefix(token.TokenType.TRUE, () => { return this.parseBoolean() });
         this.registerPrefix(token.TokenType.FALSE, () => { return this.parseBoolean() });
         this.registerPrefix(token.TokenType.LPAREN, () => { return this.parseGroupedExpression() });
+        this.registerPrefix(token.TokenType.IF, () => { return this.parseIfExpression() });
 
         this.registerInfix(token.TokenType.PlUS, (left: ast.Expression) => { return this.parseInfixExpression(left); });
         this.registerInfix(token.TokenType.MINUS, (left: ast.Expression) => { return this.parseInfixExpression(left); });
@@ -232,6 +233,54 @@ export class Parser {
             return null;
         }
         return exp;
+    }
+    private parseIfExpression(): ast.Expression {
+        let _if = new ast.IfExpression();
+        _if.Token = this.currentToken;
+        if (!this.expectPeek(token.TokenType.LPAREN)) {
+            return null;
+        }
+
+        this.NextToken();
+
+        _if.Condition = this.ParseExpression(Priority.LOWEST);
+
+        if (!this.expectPeek(token.TokenType.RPAREN)) {
+            return null;
+        }
+
+        if (!this.expectPeek(token.TokenType.LBRACE)) {
+            return null;
+        }
+
+        _if.Consequence = this.parseBlockStatement();
+
+        if (this.peekTokenIs(token.TokenType.ELSE)) {
+            this.NextToken();
+            if (!this.expectPeek(token.TokenType.LBRACE)) {
+                return null;
+            }
+
+            _if.Alternative = this.parseBlockStatement();
+        }
+
+        return _if;
+    }
+
+    private parseBlockStatement(): ast.BlockStatement {
+        let block = new ast.BlockStatement();
+        block.Statements = [];
+
+        this.NextToken();
+        while (!this.currentTokenIs(token.TokenType.RBRACE) && !this.currentTokenIs(token.TokenType.EOF)) {
+            let s = this.ParseStatement();
+
+            if (s != null) {
+                block.Statements.push(s);
+            }
+            this.NextToken();
+        }
+        return block;
     }
     private NextToken() {
         this.currentToken = this.peekToken;

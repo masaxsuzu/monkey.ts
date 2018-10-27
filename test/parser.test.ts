@@ -33,6 +33,61 @@ class To {
         i.Value = v;
         return i;
     }
+
+    public static InfixExpressionFrom(left: ast.Expression, operator: string, right: ast.Expression): ast.InfixExpression {
+        let inf = new ast.InfixExpression();
+        inf.Left = left;
+        inf.Operator = operator;
+        inf.Right = right;
+        return inf;
+    }
+    public static IfExpressionFrom(condition: ast.Expression, block: ast.BlockStatement): ast.IfExpression {
+        let _if = new ast.IfExpression();
+        _if.Condition = condition;
+        _if.Consequence = block;
+
+        return _if
+    }
+
+    public static SimpleIfExpressionFrom(left: string, operator: token.Token, right: string, body: string): ast.IfExpression {
+        let c = this.SimpleConditionFrom(left, operator, right);
+        let b = this.SimpleBlockStatement(body);
+
+        return this.IfExpressionFrom(c, b);
+    }
+    public static SimpleIfElseExpressionFrom(left: string, operator: token.Token, right: string, cons: string, alt: string): ast.IfExpression {
+        let c = this.SimpleConditionFrom(left, operator, right);
+        let b1 = this.SimpleBlockStatement(cons);
+        let b2 = this.SimpleBlockStatement(alt);
+
+        let if_else = this.IfExpressionFrom(c, b1);
+        if_else.Alternative = b2;
+        return if_else;
+    }
+
+    public static SimpleConditionFrom(left: string, operator: token.Token, right: string): ast.InfixExpression {
+        let leftid = this.IdentifierFrom(new token.Token(token.TokenType.IDENT, left), left);
+        let rightid = this.IdentifierFrom(new token.Token(token.TokenType.IDENT, right), right);
+
+        let c = new ast.InfixExpression();
+        c.Left = leftid;
+        c.Operator = operator.Literal;
+        c.Right = rightid;
+        c.Token = operator
+        return c;
+    }
+    public static SimpleBlockStatement(body: string): ast.BlockStatement {
+        let id = this.IdentifierFrom(new token.Token(token.TokenType.IDENT, body), body);
+        id.Value = body;
+        let ex = new ExpressionStatement();
+        ex.Token = id.Token;
+        ex.Expression = id;
+        let b = new ast.BlockStatement();
+        b.Statements = [];
+        b.Statements.push(ex);
+
+        return b
+    }
 }
 
 describe('ParseLetStatements', () => {
@@ -307,7 +362,49 @@ describe('OperatorPrecedenceParsing', () => {
     });
 })
 
+describe('IfExpression', () => {
+    interface test {
+        input: string
+        want: ast.IfExpression
+    }
+    let tests: test[] = [
+        {
+            input: "if ( x < y ) {x}",
+            want: To.SimpleIfExpressionFrom("x", new token.Token(token.TokenType.LT, "<"), "y", "x")
+        },
+        {
+            input: "if ( x > y ) {y}",
+            want: To.SimpleIfExpressionFrom("x", new token.Token(token.TokenType.GT, ">"), "y", "y")
+        },
+        {
+            input: "if ( x < y ) {x} else {y}",
+            want: To.SimpleIfElseExpressionFrom("x", new token.Token(token.TokenType.LT, "<"), "y", "x", "y")
+        },
+        {
+            input: "if ( x > y ) {y} else {y}",
+            want: To.SimpleIfElseExpressionFrom("x", new token.Token(token.TokenType.GT, ">"), "y", "y", "y")
+        },
 
+
+    ];
+    tests.forEach(tt => {
+        it(`${tt.input} -> ${tt.want.String()}`, () => {
+            let l = new lexer.Lexer(tt.input);
+            let p = parser.Parser.New(l);
+            let program = p.ToProgram();
+            chai.expect(p.Errors().length).equal(0, Helper.ToString(p.Errors()));
+
+            chai.expect(program.Statements.length).equal(1);
+
+            let s = <ExpressionStatement>program.Statements[0];
+            let _if = <ast.IfExpression>s.Expression;
+            chai.expect(_if.Condition, "condition").deep.equal(tt.want.Condition);
+            chai.expect(_if.Consequence, "consequence").deep.equal(tt.want.Consequence);
+            chai.expect(_if.Alternative, "Alternative").deep.equal(tt.want.Alternative);
+
+        });
+    });
+})
 
 describe('ProgramToString', () => {
     interface test {
