@@ -288,6 +288,11 @@ describe('OperatorPrecedenceParsing', () => {
         { input: "3 + 4; -5 * 5", want: "(3 + 4)((-5) * 5)", },
         { input: "5 > 4 == 3 < 4", want: "((5 > 4) == (3 < 4))", },
         { input: "5 > 4 != 3 < 4", want: "((5 > 4) != (3 < 4))", },
+        { input: "true", want: "true", },
+        { input: "false", want: "false", },
+        { input: "5 > 4 == true", want: "((5 > 4) == true)", },
+        { input: "5 < 4 != false ", want: "((5 < 4) != false)", },
+
     ];
     tests.forEach(tt => {
         it(`${tt.input} -> ${tt.want}`, () => {

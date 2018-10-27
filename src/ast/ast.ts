@@ -157,4 +157,12 @@ export class IntegerLiteral {
     String(): string { return this.Token.Literal; }
 }
 
+export class Bool{
+    Token: Token
+    Value: Boolean
 
+    ExpressionNode(){}
+    Node():Node{return this;}
+    TokenLiteral():string{return this.Token.Literal;}
+    String():string{return this.Token.Literal;}
+}
