@@ -41,9 +41,9 @@ export class Parser {
 
         // "this" is lost if class method is directly used as callback.
         // https://kuroeveryday.blogspot.com/2015/04/this.html.
-
-        this.registerPrefix(token.TokenType.IDENT, () => { return this.parseIdentifier() });
-        this.registerPrefix(token.TokenType.INT, () => { return this.parseIntegerLiteral() });
+        
+        this.registerPrefix(token.TokenType.IDENT,() =>{return this.parseIdentifier()});
+        this.registerPrefix(token.TokenType.INT,() =>{return this.parseIntegerLiteral()});
     }
 
     public ToProgram(): ast.Program {
@@ -85,7 +85,10 @@ export class Parser {
             return null;
         }
 
-        ls.Name = new ast.Identifier(this.currentToken, this.currentToken.Literal);
+        let i = new ast.Identifier();
+        i.Token= this.currentToken;
+        i.Value = this.currentToken.Literal;
+        ls.Name = i;
 
         if (!this.expectPeek(token.TokenType.ASSIGN)) {
             return null;
@@ -123,23 +126,26 @@ export class Parser {
         return se;
     }
 
-    private ParseExpression(p: Priority): ast.Expression {
+    private ParseExpression(p: Priority):ast.Expression {
 
         let prefix = this.prefixParsingFunctions.get(this.currentToken.Type);
-
-        let e = prefix();
+        
+        let e =  prefix();
         return e;
     }
 
-    private parseIdentifier(): ast.Identifier {
-        return new ast.Identifier(this.currentToken, this.currentToken.Literal);
+    private parseIdentifier():ast.Identifier{
+        let i = new ast.Identifier();
+        i.Token= this.currentToken;
+        i.Value = this.currentToken.Literal;
+        return i;
     }
 
-    private parseIntegerLiteral(): ast.IntegerLiteral {
-        let l = new ast.IntegerLiteral();
-        l.Value = parseInt(this.currentToken.Literal);
-        l.Token = this.currentToken;
-        return l;
+    private parseIntegerLiteral():ast.IntegerLiteral{
+            let l = new ast.IntegerLiteral();
+            l.Value = parseInt(this.currentToken.Literal);
+            l.Token = this.currentToken;
+            return l;
     }
 
     private NextToken() {

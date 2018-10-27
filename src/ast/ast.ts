@@ -90,10 +90,6 @@ export class Identifier {
     Token: Token
     Value: string
 
-    public constructor(t: Token, v: string) {
-        this.Token = t;
-        this.Value = v;
-    }
     public Node(): Node {
         return this;
     }
@@ -109,7 +105,7 @@ export class IntegerLiteral {
     Value: number
 
     ExpressionNode() { }
-    
+
     Node(): Node {
         return this;
     }

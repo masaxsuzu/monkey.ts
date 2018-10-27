@@ -26,6 +26,12 @@ class To {
         rs.ReturnValue = i1;
         return rs;
     }
+    public static IdentifierFrom(t:token.Token,v:string):ast.Identifier{
+        let i = new ast.Identifier();
+        i.Token = t;
+        i.Value = v;
+        return i;
+    }
 }
 
 describe('ParseLetStatements', () => {
@@ -197,8 +203,8 @@ describe('ProgramToString', () => {
                 [
                     To.LetStatementFrom(
                         new token.Token(token.TokenType.LET, "let"),
-                        new ast.Identifier(new token.Token(token.TokenType.IDENT, "myVar"), "myVar"),
-                        new ast.Identifier(new token.Token(token.TokenType.IDENT, "anotherVar"), "anotherVar")),
+                        To.IdentifierFrom(new token.Token(token.TokenType.IDENT, "myVar"), "myVar"),
+                        To.IdentifierFrom(new token.Token(token.TokenType.IDENT, "anotherVar"), "anotherVar")),
                 ]
             ),
             want: 'let myVar = anotherVar;',
@@ -209,7 +215,7 @@ describe('ProgramToString', () => {
                 [
                     To.ReturnStatementFrom(
                         new token.Token(token.TokenType.RETURN, "return"),
-                        new ast.Identifier(new token.Token(token.TokenType.IDENT, "x"), "x"),
+                        To.IdentifierFrom(new token.Token(token.TokenType.IDENT, "x"), "x"),
                     ),
                 ]),
             want: 'return x;',
