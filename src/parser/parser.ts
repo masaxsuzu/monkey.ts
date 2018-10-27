@@ -44,6 +44,9 @@ export class Parser {
         
         this.registerPrefix(token.TokenType.IDENT,() =>{return this.parseIdentifier()});
         this.registerPrefix(token.TokenType.INT,() =>{return this.parseIntegerLiteral()});
+        this.registerPrefix(token.TokenType.BANG,() =>{return this.parsePrefixExpression()});
+        this.registerPrefix(token.TokenType.MINUS,() =>{return this.parsePrefixExpression()});
+
     }
 
     public ToProgram(): ast.Program {
@@ -126,10 +129,18 @@ export class Parser {
         return se;
     }
 
+    private noPrefixParseError(t:token.TokenType){
+        let msg =`no prefix parse function for ${t} found`;
+        this.errors.push(msg);
+    }
+
     private ParseExpression(p: Priority):ast.Expression {
 
         let prefix = this.prefixParsingFunctions.get(this.currentToken.Type);
-        
+        if (prefix == null || prefix == undefined){
+            this.noPrefixParseError(this.currentToken.Type);
+            return null;
+        }
         let e =  prefix();
         return e;
     }
@@ -146,6 +157,18 @@ export class Parser {
             l.Value = parseInt(this.currentToken.Literal);
             l.Token = this.currentToken;
             return l;
+    }
+
+    private parsePrefixExpression():ast.Expression{
+        let ex = new ast.PrefixExpression();
+        ex.Token = this.currentToken;
+        ex.Operator = this.currentToken.Literal;
+
+        this.NextToken();
+
+        ex.Right = this.ParseExpression(Priority.PREFIX);
+
+        return ex;
     }
 
     private NextToken() {

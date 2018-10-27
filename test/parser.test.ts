@@ -4,6 +4,7 @@ import * as lexer from "../src/lexer/lexer"
 import * as ast from "../src/ast/ast"
 import * as parser from "../src/parser/parser"
 import { EROFS } from "constants";
+import { ExpressionStatement } from "../src/ast/ast";
 
 
 class To {
@@ -189,6 +190,43 @@ describe('IntegerLiteralExpression', () => {
     });
 })
 
+describe('ParsingPrefixExpression',()=>{
+    interface test {
+        name: string
+        input: string
+        want:  {op:string,num:number,literal:string}
+    }
+    let tests: test[] = [
+        {
+            name: "!5",
+            input: "!5",
+            want: {op:"!",num:5,literal:"5"},
+        } as test,
+        {
+            name: "-15",
+            input: "-15",
+            want: {op:"-",num:15,literal:"15"},
+        } as test,
+    ];  
+    tests.forEach(tt => {
+        it(tt.name, () => {
+            let l = new lexer.Lexer(tt.input);
+            let p = parser.Parser.New(l);
+            let program = p.ToProgram();
+            chai.expect(p.Errors().length).equal(0,p.Errors().toString());
+            chai.expect(program.Statements.length).equal(1);
+
+            let s = <ExpressionStatement>program.Statements[0];
+            let e = <ast.PrefixExpression>s.Expression;
+
+            chai.expect(e.Operator).equal(tt.want.op);
+
+            let int = <ast.IntegerLiteral>e.Right;
+            chai.expect(int.Value).equal(tt.want.num);
+            chai.expect(int.TokenLiteral()).equal(tt.want.literal);
+        });
+    });
+})
 
 describe('ProgramToString', () => {
     interface test {

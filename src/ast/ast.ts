@@ -86,6 +86,25 @@ export class ExpressionStatement {
     }
 }
 
+export class PrefixExpression {
+    Token: Token
+    Operator: string
+    Right: Expression
+
+    ExpressionNode() { }
+    Node() :Node{
+        return this;
+    }
+    TokenLiteral(): string { return this.Token.Literal; }
+    String(): string {
+        let out = "(";
+        out += this.Operator;
+        out += this.Right.Node().String();
+        out += ")";
+        return out;
+    }
+}
+
 export class Identifier {
     Token: Token
     Value: string
