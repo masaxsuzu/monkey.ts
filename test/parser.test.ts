@@ -269,6 +269,40 @@ describe('ParsingInfixExpression',()=>{
     });
 })
 
+describe('OperatorPrecedenceParsing',()=>{
+    interface test {
+        input: string
+        want:  string
+    }
+    let tests: test[] = [
+        {   input: "a",want:"a",},
+        {   input: "a+b",want:"(a + b)",},
+        {   input: "-a*b",want:"((-a) * b)",},
+        {   input: "a+-b",want:"(a + (-b))",},
+        {   input: "!-a",want:"(!(-a))",},
+        {   input: "a + b + c",want:"((a + b) + c)",},
+        {   input: "a + b - c",want:"((a + b) - c)",},
+        {   input: "a * b / c",want:"((a * b) / c)",},
+        {   input: "a + b / c",want:"(a + (b / c))",},
+        {   input: "a + b * c + d / e - f",want:"(((a + (b * c)) + (d / e)) - f)",},
+        {   input: "3 + 4; -5 * 5",want:"(3 + 4)((-5) * 5)",},
+        {   input: "5 > 4 == 3 < 4",want:"((5 > 4) == (3 < 4))",},
+        {   input: "5 > 4 != 3 < 4",want:"((5 > 4) != (3 < 4))",},
+    ];  
+    tests.forEach(tt => {
+        it(`${tt.input} -> ${tt.want}`, () => {
+            let l = new lexer.Lexer(tt.input);
+            let p = parser.Parser.New(l);
+            let program = p.ToProgram();
+            chai.expect(p.Errors().length).equal(0,p.Errors().toString());
+
+            chai.expect(program.String()).equal(tt.want);
+        });
+    });
+})
+
+
+
 describe('ProgramToString', () => {
     interface test {
         name: string
