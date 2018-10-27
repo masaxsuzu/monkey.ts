@@ -27,7 +27,7 @@ class To {
         rs.ReturnValue = i1;
         return rs;
     }
-    public static IdentifierFrom(t:token.Token,v:string):ast.Identifier{
+    public static IdentifierFrom(t: token.Token, v: string): ast.Identifier {
         let i = new ast.Identifier();
         i.Token = t;
         i.Value = v;
@@ -190,30 +190,30 @@ describe('IntegerLiteralExpression', () => {
     });
 })
 
-describe('ParsingPrefixExpression',()=>{
+describe('ParsingPrefixExpression', () => {
     interface test {
         name: string
         input: string
-        want:  {op:string,num:number,literal:string}
+        want: { op: string, num: number, literal: string }
     }
     let tests: test[] = [
         {
             name: "!5",
             input: "!5",
-            want: {op:"!",num:5,literal:"5"},
+            want: { op: "!", num: 5, literal: "5" },
         } as test,
         {
             name: "-15",
             input: "-15",
-            want: {op:"-",num:15,literal:"15"},
+            want: { op: "-", num: 15, literal: "15" },
         } as test,
-    ];  
+    ];
     tests.forEach(tt => {
         it(tt.name, () => {
             let l = new lexer.Lexer(tt.input);
             let p = parser.Parser.New(l);
             let program = p.ToProgram();
-            chai.expect(p.Errors().length).equal(0,p.Errors().toString());
+            chai.expect(p.Errors().length).equal(0, p.Errors().toString());
             chai.expect(program.Statements.length).equal(1);
 
             let s = <ExpressionStatement>program.Statements[0];
@@ -228,28 +228,28 @@ describe('ParsingPrefixExpression',()=>{
     });
 })
 
-describe('ParsingInfixExpression',()=>{
+describe('ParsingInfixExpression', () => {
     interface test {
         name: string
         input: string
-        want:  {left:number,operator:string,right:number}
+        want: { left: number, operator: string, right: number }
     }
     let tests: test[] = [
-        {   name: "5+5",input: "5+5",want: {left:5,operator:"+",right:5},},
-        {   name: "5-5",input: "5-5",want: {left:5,operator:"-",right:5},},
-        {   name: "5*5",input: "5*5",want: {left:5,operator:"*",right:5},},
-        {   name: "5/5",input: "5/5",want: {left:5,operator:"/",right:5},},
-        {   name: "5>5",input: "5>5",want: {left:5,operator:">",right:5},},
-        {   name: "5<5",input: "5<5",want: {left:5,operator:"<",right:5},},
-        {   name: "5==5",input: "5==5",want: {left:5,operator:"==",right:5},},
-        {   name: "5!=5",input: "5!=5",want: {left:5,operator:"!=",right:5},},
-    ];  
+        { name: "5+5", input: "5+5", want: { left: 5, operator: "+", right: 5 }, },
+        { name: "5-5", input: "5-5", want: { left: 5, operator: "-", right: 5 }, },
+        { name: "5*5", input: "5*5", want: { left: 5, operator: "*", right: 5 }, },
+        { name: "5/5", input: "5/5", want: { left: 5, operator: "/", right: 5 }, },
+        { name: "5>5", input: "5>5", want: { left: 5, operator: ">", right: 5 }, },
+        { name: "5<5", input: "5<5", want: { left: 5, operator: "<", right: 5 }, },
+        { name: "5==5", input: "5==5", want: { left: 5, operator: "==", right: 5 }, },
+        { name: "5!=5", input: "5!=5", want: { left: 5, operator: "!=", right: 5 }, },
+    ];
     tests.forEach(tt => {
         it(tt.name, () => {
             let l = new lexer.Lexer(tt.input);
             let p = parser.Parser.New(l);
             let program = p.ToProgram();
-            chai.expect(p.Errors().length).equal(0,p.Errors().toString());
+            chai.expect(p.Errors().length).equal(0, p.Errors().toString());
             chai.expect(program.Statements.length).equal(1);
 
             let s = <ExpressionStatement>program.Statements[0];
@@ -269,32 +269,32 @@ describe('ParsingInfixExpression',()=>{
     });
 })
 
-describe('OperatorPrecedenceParsing',()=>{
+describe('OperatorPrecedenceParsing', () => {
     interface test {
         input: string
-        want:  string
+        want: string
     }
     let tests: test[] = [
-        {   input: "a",want:"a",},
-        {   input: "a+b",want:"(a + b)",},
-        {   input: "-a*b",want:"((-a) * b)",},
-        {   input: "a+-b",want:"(a + (-b))",},
-        {   input: "!-a",want:"(!(-a))",},
-        {   input: "a + b + c",want:"((a + b) + c)",},
-        {   input: "a + b - c",want:"((a + b) - c)",},
-        {   input: "a * b / c",want:"((a * b) / c)",},
-        {   input: "a + b / c",want:"(a + (b / c))",},
-        {   input: "a + b * c + d / e - f",want:"(((a + (b * c)) + (d / e)) - f)",},
-        {   input: "3 + 4; -5 * 5",want:"(3 + 4)((-5) * 5)",},
-        {   input: "5 > 4 == 3 < 4",want:"((5 > 4) == (3 < 4))",},
-        {   input: "5 > 4 != 3 < 4",want:"((5 > 4) != (3 < 4))",},
-    ];  
+        { input: "a", want: "a", },
+        { input: "a+b", want: "(a + b)", },
+        { input: "-a*b", want: "((-a) * b)", },
+        { input: "a+-b", want: "(a + (-b))", },
+        { input: "!-a", want: "(!(-a))", },
+        { input: "a + b + c", want: "((a + b) + c)", },
+        { input: "a + b - c", want: "((a + b) - c)", },
+        { input: "a * b / c", want: "((a * b) / c)", },
+        { input: "a + b / c", want: "(a + (b / c))", },
+        { input: "a + b * c + d / e - f", want: "(((a + (b * c)) + (d / e)) - f)", },
+        { input: "3 + 4; -5 * 5", want: "(3 + 4)((-5) * 5)", },
+        { input: "5 > 4 == 3 < 4", want: "((5 > 4) == (3 < 4))", },
+        { input: "5 > 4 != 3 < 4", want: "((5 > 4) != (3 < 4))", },
+    ];
     tests.forEach(tt => {
         it(`${tt.input} -> ${tt.want}`, () => {
             let l = new lexer.Lexer(tt.input);
             let p = parser.Parser.New(l);
             let program = p.ToProgram();
-            chai.expect(p.Errors().length).equal(0,p.Errors().toString());
+            chai.expect(p.Errors().length).equal(0, p.Errors().toString());
 
             chai.expect(program.String()).equal(tt.want);
         });

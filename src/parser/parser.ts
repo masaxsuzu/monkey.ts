@@ -17,15 +17,15 @@ enum Priority {
     CALL,
 }
 
-var precedences = new Map<token.TokenType,Priority>([
-    [token.TokenType.EQ,Priority.EQUALS],
-    [token.TokenType.NOT_EQ,Priority.EQUALS],
-    [token.TokenType.LT,Priority.LESSGREATER],
-    [token.TokenType.GT,Priority.LESSGREATER],
-    [token.TokenType.PlUS,Priority.SUM],
-    [token.TokenType.MINUS,Priority.SUM],
-    [token.TokenType.SLASH,Priority.PRODUCT],
-    [token.TokenType.ASTERISK,Priority.PRODUCT],
+var precedences = new Map<token.TokenType, Priority>([
+    [token.TokenType.EQ, Priority.EQUALS],
+    [token.TokenType.NOT_EQ, Priority.EQUALS],
+    [token.TokenType.LT, Priority.LESSGREATER],
+    [token.TokenType.GT, Priority.LESSGREATER],
+    [token.TokenType.PlUS, Priority.SUM],
+    [token.TokenType.MINUS, Priority.SUM],
+    [token.TokenType.SLASH, Priority.PRODUCT],
+    [token.TokenType.ASTERISK, Priority.PRODUCT],
 ]);
 
 export class Parser {
@@ -53,20 +53,20 @@ export class Parser {
 
         // "this" is lost if class method is directly used as callback.
         // https://kuroeveryday.blogspot.com/2015/04/this.html.
-        
-        this.registerPrefix(token.TokenType.IDENT,() =>{return this.parseIdentifier()});
-        this.registerPrefix(token.TokenType.INT,() =>{return this.parseIntegerLiteral()});
-        this.registerPrefix(token.TokenType.BANG,() =>{return this.parsePrefixExpression()});
-        this.registerPrefix(token.TokenType.MINUS,() =>{return this.parsePrefixExpression()});
 
-        this.registerInfix(token.TokenType.PlUS,(left:ast.Expression)=>{return this.parseInfixExpression(left);});
-        this.registerInfix(token.TokenType.MINUS,(left:ast.Expression)=>{return this.parseInfixExpression(left);});
-        this.registerInfix(token.TokenType.SLASH,(left:ast.Expression)=>{return this.parseInfixExpression(left);});
-        this.registerInfix(token.TokenType.ASTERISK,(left:ast.Expression)=>{return this.parseInfixExpression(left);});
-        this.registerInfix(token.TokenType.EQ,(left:ast.Expression)=>{return this.parseInfixExpression(left);});
-        this.registerInfix(token.TokenType.NOT_EQ,(left:ast.Expression)=>{return this.parseInfixExpression(left);});
-        this.registerInfix(token.TokenType.LT,(left:ast.Expression)=>{return this.parseInfixExpression(left);});
-        this.registerInfix(token.TokenType.GT,(left:ast.Expression)=>{return this.parseInfixExpression(left);});
+        this.registerPrefix(token.TokenType.IDENT, () => { return this.parseIdentifier() });
+        this.registerPrefix(token.TokenType.INT, () => { return this.parseIntegerLiteral() });
+        this.registerPrefix(token.TokenType.BANG, () => { return this.parsePrefixExpression() });
+        this.registerPrefix(token.TokenType.MINUS, () => { return this.parsePrefixExpression() });
+
+        this.registerInfix(token.TokenType.PlUS, (left: ast.Expression) => { return this.parseInfixExpression(left); });
+        this.registerInfix(token.TokenType.MINUS, (left: ast.Expression) => { return this.parseInfixExpression(left); });
+        this.registerInfix(token.TokenType.SLASH, (left: ast.Expression) => { return this.parseInfixExpression(left); });
+        this.registerInfix(token.TokenType.ASTERISK, (left: ast.Expression) => { return this.parseInfixExpression(left); });
+        this.registerInfix(token.TokenType.EQ, (left: ast.Expression) => { return this.parseInfixExpression(left); });
+        this.registerInfix(token.TokenType.NOT_EQ, (left: ast.Expression) => { return this.parseInfixExpression(left); });
+        this.registerInfix(token.TokenType.LT, (left: ast.Expression) => { return this.parseInfixExpression(left); });
+        this.registerInfix(token.TokenType.GT, (left: ast.Expression) => { return this.parseInfixExpression(left); });
 
     }
 
@@ -110,7 +110,7 @@ export class Parser {
         }
 
         let i = new ast.Identifier();
-        i.Token= this.currentToken;
+        i.Token = this.currentToken;
         i.Value = this.currentToken.Literal;
         ls.Name = i;
 
@@ -150,23 +150,23 @@ export class Parser {
         return se;
     }
 
-    private noPrefixParseError(t:token.TokenType){
-        let msg =`no prefix parse function for ${t} found`;
+    private noPrefixParseError(t: token.TokenType) {
+        let msg = `no prefix parse function for ${t} found`;
         this.errors.push(msg);
     }
 
-    private ParseExpression(p: Priority):ast.Expression {
+    private ParseExpression(p: Priority): ast.Expression {
 
         let prefix = this.prefixParsingFunctions.get(this.currentToken.Type);
-        if (prefix == null || prefix == undefined){
+        if (prefix == null || prefix == undefined) {
             this.noPrefixParseError(this.currentToken.Type);
             return null;
         }
-        let left =  prefix();
+        let left = prefix();
 
-        while (!this.peekTokenIs(token.TokenType.SEMICOLON) && p < this.peekPrecedence()){
+        while (!this.peekTokenIs(token.TokenType.SEMICOLON) && p < this.peekPrecedence()) {
             let infix = this.infixParsingFunctions.get(this.peekToken.Type);
-            if(infix == null || infix == undefined){
+            if (infix == null || infix == undefined) {
                 return left;
             }
             this.NextToken();
@@ -176,21 +176,21 @@ export class Parser {
         return left;
     }
 
-    private parseIdentifier():ast.Identifier{
+    private parseIdentifier(): ast.Identifier {
         let i = new ast.Identifier();
-        i.Token= this.currentToken;
+        i.Token = this.currentToken;
         i.Value = this.currentToken.Literal;
         return i;
     }
 
-    private parseIntegerLiteral():ast.IntegerLiteral{
-            let l = new ast.IntegerLiteral();
-            l.Value = parseInt(this.currentToken.Literal);
-            l.Token = this.currentToken;
-            return l;
+    private parseIntegerLiteral(): ast.IntegerLiteral {
+        let l = new ast.IntegerLiteral();
+        l.Value = parseInt(this.currentToken.Literal);
+        l.Token = this.currentToken;
+        return l;
     }
 
-    private parsePrefixExpression():ast.Expression{
+    private parsePrefixExpression(): ast.Expression {
         let ex = new ast.PrefixExpression();
         ex.Token = this.currentToken;
         ex.Operator = this.currentToken.Literal;
@@ -202,13 +202,13 @@ export class Parser {
         return ex;
     }
 
-    private parseInfixExpression(left:ast.Expression):ast.Expression{
+    private parseInfixExpression(left: ast.Expression): ast.Expression {
         let ex = new ast.InfixExpression();
         ex.Token = this.currentToken;
         ex.Operator = this.currentToken.Literal;
         ex.Left = left;
 
-        let precedence = this.currentPrecedence(); 
+        let precedence = this.currentPrecedence();
         this.NextToken();
         ex.Right = this.ParseExpression(precedence);
 
@@ -234,11 +234,11 @@ export class Parser {
     private currentTokenIs(t: token.TokenType): Boolean {
         return this.currentToken.Type == t;
     }
-    private currentPrecedence():Priority{
+    private currentPrecedence(): Priority {
         let p = precedences.get(this.currentToken.Type);
         return p == undefined ? Priority.LOWEST : p;
     }
-    private peekPrecedence():Priority{
+    private peekPrecedence(): Priority {
         let p = precedences.get(this.peekToken.Type);
         return p == undefined ? Priority.LOWEST : p;
     }
