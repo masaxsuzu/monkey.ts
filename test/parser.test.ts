@@ -88,6 +88,18 @@ class To {
 
         return b
     }
+
+    public static SimpleFunctionLiteralFrom(p1:string,p2:string,body:ast.BlockStatement):ast.FunctionLiteral{
+        let f = new ast.FunctionLiteral();
+        f.Parameters = [];
+        f.Parameters.push(this.IdentifierFrom(new token.Token(token.TokenType.IDENT,p1),p1));
+        f.Parameters.push(this.IdentifierFrom(new token.Token(token.TokenType.IDENT,p2),p2));
+        f.Token = new token.Token(token.TokenType.FUNCTION,"fn");
+        f.Body = body;
+
+        return f;
+
+    }
 }
 
 describe('ParseLetStatements', () => {
@@ -405,6 +417,40 @@ describe('IfExpression', () => {
         });
     });
 })
+
+describe('FunctionLiteralParsing', () => {
+    interface test {
+        input: string
+        want: ast.FunctionLiteral
+    }
+    let tests: test[] = [
+        {
+            input: "fn ( x , y ) {x}",
+            want: To.SimpleFunctionLiteralFrom("x","y",To.SimpleBlockStatement("x")),
+        },
+        {
+            input: "fn ( y , z ) {x}",
+            want: To.SimpleFunctionLiteralFrom("y","z",To.SimpleBlockStatement("x")),
+        },
+    ];
+    tests.forEach(tt => {
+        it(`${tt.input} -> ${tt.want.String()}`, () => {
+            let l = new lexer.Lexer(tt.input);
+            let p = parser.Parser.New(l);
+            let program = p.ToProgram();
+            chai.expect(p.Errors().length).equal(0, Helper.ToString(p.Errors()));
+
+            chai.expect(program.Statements.length).equal(1);
+
+            let s = <ExpressionStatement>program.Statements[0];
+            let fn= <ast.FunctionLiteral>s.Expression;
+            chai.expect(fn.Parameters, "condition").deep.equal(tt.want.Parameters);
+            chai.expect(fn.Body, "consequence").deep.equal(tt.want.Body);
+
+        });
+    });
+})
+
 
 describe('ProgramToString', () => {
     interface test {

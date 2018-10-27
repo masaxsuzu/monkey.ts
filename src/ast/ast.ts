@@ -209,3 +209,30 @@ export class BlockStatement {
         return out;
     }
 }
+
+export class FunctionLiteral {
+    Token:Token
+    Parameters:Identifier[]
+    Body:BlockStatement
+
+    ExpressionNode(){}
+    Node():Node{
+        return this;
+    }
+    TokenLiteral():string{return this.Token.Literal;}
+    String():string{
+        let out = "";
+        let params = [];
+        this.Parameters.forEach(param => {
+            params.push(param.String());
+        });
+
+        out += this.TokenLiteral();
+        out += "(";
+        out += params.join(", ");
+        out += ") ";
+        out += this.Body.String();
+
+        return out;
+    }
+}

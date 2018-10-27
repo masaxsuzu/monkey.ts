@@ -62,6 +62,7 @@ export class Parser {
         this.registerPrefix(token.TokenType.FALSE, () => { return this.parseBoolean() });
         this.registerPrefix(token.TokenType.LPAREN, () => { return this.parseGroupedExpression() });
         this.registerPrefix(token.TokenType.IF, () => { return this.parseIfExpression() });
+        this.registerPrefix(token.TokenType.FUNCTION, () => { return this.parseFunctionLiteral() });
 
         this.registerInfix(token.TokenType.PlUS, (left: ast.Expression) => { return this.parseInfixExpression(left); });
         this.registerInfix(token.TokenType.MINUS, (left: ast.Expression) => { return this.parseInfixExpression(left); });
@@ -282,6 +283,54 @@ export class Parser {
         }
         return block;
     }
+    private parseFunctionLiteral():ast.Expression{
+        let fn = new ast.FunctionLiteral();
+        if(!this.expectPeek(token.TokenType.LPAREN)){
+            return null;
+        }
+        fn.Parameters = this.parseFunctionParameters();
+
+        if (!this.expectPeek(token.TokenType.LBRACE)){
+            return null;
+        }
+
+        fn.Body = this.parseBlockStatement();
+
+        return fn;
+    }
+
+    private parseFunctionParameters():ast.Identifier[]{
+        let identifiers = [];
+        if(this.peekTokenIs(token.TokenType.RPAREN)){
+            this.NextToken();
+            return identifiers;
+        }
+
+        this.NextToken();
+
+        let ident = new ast.Identifier();
+        ident.Token = this.currentToken;
+        ident.Value = this.currentToken.Literal;
+        identifiers.push(ident);
+
+        while(this.peekTokenIs(token.TokenType.COMMA)){
+            this.NextToken();
+            this.NextToken();
+
+            let ident = new ast.Identifier();
+            ident.Token = this.currentToken;
+            ident.Value = this.currentToken.Literal;
+            identifiers.push(ident);
+    
+        }
+
+        if(!this.expectPeek(token.TokenType.RPAREN)){
+            return null;
+        }
+
+        return identifiers;
+    }
+
     private NextToken() {
         this.currentToken = this.peekToken;
         this.peekToken = this.lex.NextToken();
