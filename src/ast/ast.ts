@@ -105,6 +105,30 @@ export class PrefixExpression {
     }
 }
 
+export class InfixExpression {
+    Token: Token
+    Left: Expression
+    Operator: string
+    Right: Expression
+
+    ExpressionNode() { }
+    Node() :Node{
+        return this;
+    }
+    TokenLiteral(): string { return this.Token.Literal; }
+    String(): string {
+        let out = "(";
+        out += this.Left.Node().String();
+        out += " ";
+        out += this.Operator;
+        out += " ";
+        out += this.Right.Node().String();
+        out += ")";
+        return out;
+    }
+}
+
+
 export class Identifier {
     Token: Token
     Value: string

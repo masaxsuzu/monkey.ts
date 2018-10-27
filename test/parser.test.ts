@@ -228,6 +228,47 @@ describe('ParsingPrefixExpression',()=>{
     });
 })
 
+describe('ParsingInfixExpression',()=>{
+    interface test {
+        name: string
+        input: string
+        want:  {left:number,operator:string,right:number}
+    }
+    let tests: test[] = [
+        {   name: "5+5",input: "5+5",want: {left:5,operator:"+",right:5},},
+        {   name: "5-5",input: "5-5",want: {left:5,operator:"-",right:5},},
+        {   name: "5*5",input: "5*5",want: {left:5,operator:"*",right:5},},
+        {   name: "5/5",input: "5/5",want: {left:5,operator:"/",right:5},},
+        {   name: "5>5",input: "5>5",want: {left:5,operator:">",right:5},},
+        {   name: "5<5",input: "5<5",want: {left:5,operator:"<",right:5},},
+        {   name: "5==5",input: "5==5",want: {left:5,operator:"==",right:5},},
+        {   name: "5!=5",input: "5!=5",want: {left:5,operator:"!=",right:5},},
+    ];  
+    tests.forEach(tt => {
+        it(tt.name, () => {
+            let l = new lexer.Lexer(tt.input);
+            let p = parser.Parser.New(l);
+            let program = p.ToProgram();
+            chai.expect(p.Errors().length).equal(0,p.Errors().toString());
+            chai.expect(program.Statements.length).equal(1);
+
+            let s = <ExpressionStatement>program.Statements[0];
+            let e = <ast.InfixExpression>s.Expression;
+
+            let left = <ast.IntegerLiteral>e.Left;
+            let operator = e.Operator;
+            let right = <ast.IntegerLiteral>e.Right;
+
+            chai.expect(left.Value).equal(tt.want.left);
+            chai.expect(left.TokenLiteral()).equal(tt.want.left.toString());
+            chai.expect(operator).equal(tt.want.operator);
+            chai.expect(right.Value).equal(tt.want.right);
+            chai.expect(right.TokenLiteral()).equal(tt.want.right.toString());
+
+        });
+    });
+})
+
 describe('ProgramToString', () => {
     interface test {
         name: string

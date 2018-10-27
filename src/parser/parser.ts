@@ -16,6 +16,18 @@ enum Priority {
     PREFIX,
     CALL,
 }
+
+var precedences = new Map<token.TokenType,Priority>([
+    [token.TokenType.EQ,Priority.EQUALS],
+    [token.TokenType.NOT_EQ,Priority.EQUALS],
+    [token.TokenType.LT,Priority.LESSGREATER],
+    [token.TokenType.GT,Priority.LESSGREATER],
+    [token.TokenType.PlUS,Priority.SUM],
+    [token.TokenType.MINUS,Priority.SUM],
+    [token.TokenType.SLASH,Priority.PRODUCT],
+    [token.TokenType.ASTERISK,Priority.PRODUCT],
+]);
+
 export class Parser {
     private lex: lexer.Lexer;
     private currentToken: token.Token;
@@ -46,6 +58,15 @@ export class Parser {
         this.registerPrefix(token.TokenType.INT,() =>{return this.parseIntegerLiteral()});
         this.registerPrefix(token.TokenType.BANG,() =>{return this.parsePrefixExpression()});
         this.registerPrefix(token.TokenType.MINUS,() =>{return this.parsePrefixExpression()});
+
+        this.registerInfix(token.TokenType.PlUS,(left:ast.Expression)=>{return this.parseInfixExpression(left);});
+        this.registerInfix(token.TokenType.MINUS,(left:ast.Expression)=>{return this.parseInfixExpression(left);});
+        this.registerInfix(token.TokenType.SLASH,(left:ast.Expression)=>{return this.parseInfixExpression(left);});
+        this.registerInfix(token.TokenType.ASTERISK,(left:ast.Expression)=>{return this.parseInfixExpression(left);});
+        this.registerInfix(token.TokenType.EQ,(left:ast.Expression)=>{return this.parseInfixExpression(left);});
+        this.registerInfix(token.TokenType.NOT_EQ,(left:ast.Expression)=>{return this.parseInfixExpression(left);});
+        this.registerInfix(token.TokenType.LT,(left:ast.Expression)=>{return this.parseInfixExpression(left);});
+        this.registerInfix(token.TokenType.GT,(left:ast.Expression)=>{return this.parseInfixExpression(left);});
 
     }
 
@@ -141,8 +162,18 @@ export class Parser {
             this.noPrefixParseError(this.currentToken.Type);
             return null;
         }
-        let e =  prefix();
-        return e;
+        let left =  prefix();
+
+        while (!this.peekTokenIs(token.TokenType.SEMICOLON) && p < this.peekPrecedence()){
+            let infix = this.infixParsingFunctions.get(this.peekToken.Type);
+            if(infix == null || infix == undefined){
+                return left;
+            }
+            this.NextToken();
+
+            left = infix(left);
+        }
+        return left;
     }
 
     private parseIdentifier():ast.Identifier{
@@ -171,6 +202,19 @@ export class Parser {
         return ex;
     }
 
+    private parseInfixExpression(left:ast.Expression):ast.Expression{
+        let ex = new ast.InfixExpression();
+        ex.Token = this.currentToken;
+        ex.Operator = this.currentToken.Literal;
+        ex.Left = left;
+
+        let precedence = this.currentPrecedence(); 
+        this.NextToken();
+        ex.Right = this.ParseExpression(precedence);
+
+        return ex;
+    }
+
     private NextToken() {
         this.currentToken = this.peekToken;
         this.peekToken = this.lex.NextToken();
@@ -189,6 +233,14 @@ export class Parser {
     }
     private currentTokenIs(t: token.TokenType): Boolean {
         return this.currentToken.Type == t;
+    }
+    private currentPrecedence():Priority{
+        let p = precedences.get(this.currentToken.Type);
+        return p == undefined ? Priority.LOWEST : p;
+    }
+    private peekPrecedence():Priority{
+        let p = precedences.get(this.peekToken.Type);
+        return p == undefined ? Priority.LOWEST : p;
     }
     private peekError(t: token.TokenType) {
         let e = `expected next token to be ${t},got ${this.peekToken.Type} instead`;
