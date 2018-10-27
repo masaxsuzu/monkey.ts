@@ -2,6 +2,7 @@ import * as token from "../token/token"
 import * as lexer from "../lexer/lexer"
 import * as ast from "../ast/ast"
 import { addListener } from "cluster";
+import { error } from "util";
 
 type prefixParsingFunction = () => ast.Expression;
 type infixParsingFunction = (ex: ast.Expression) => ast.Expression;
@@ -40,8 +41,9 @@ export class Parser {
 
         // "this" is lost if class method is directly used as callback.
         // https://kuroeveryday.blogspot.com/2015/04/this.html.
-        
-        this.registerPrefix(token.TokenType.IDENT,() =>{return this.parseIdentifier()});
+
+        this.registerPrefix(token.TokenType.IDENT, () => { return this.parseIdentifier() });
+        this.registerPrefix(token.TokenType.INT, () => { return this.parseIntegerLiteral() });
     }
 
     public ToProgram(): ast.Program {
@@ -121,15 +123,23 @@ export class Parser {
         return se;
     }
 
-    private ParseExpression(p: Priority):ast.Expression {
+    private ParseExpression(p: Priority): ast.Expression {
 
         let prefix = this.prefixParsingFunctions.get(this.currentToken.Type);
-        
-        return prefix();
+
+        let e = prefix();
+        return e;
     }
 
-    private parseIdentifier():ast.Identifier{
-        return new ast.Identifier(this.currentToken,this.currentToken.Literal);
+    private parseIdentifier(): ast.Identifier {
+        return new ast.Identifier(this.currentToken, this.currentToken.Literal);
+    }
+
+    private parseIntegerLiteral(): ast.IntegerLiteral {
+        let l = new ast.IntegerLiteral();
+        l.Value = parseInt(this.currentToken.Literal);
+        l.Token = this.currentToken;
+        return l;
     }
 
     private NextToken() {

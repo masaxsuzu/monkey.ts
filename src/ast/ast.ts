@@ -104,4 +104,18 @@ export class Identifier {
     }
 }
 
+export class IntegerLiteral {
+    Token: Token
+    Value: number
+
+    ExpressionNode() { }
+    
+    Node(): Node {
+        return this;
+    }
+
+    TokenLiteral(): string { return this.Token.Literal; }
+    String(): string { return this.Token.Literal; }
+}
+
 
