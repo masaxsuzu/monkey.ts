@@ -292,6 +292,7 @@ describe('OperatorPrecedenceParsing', () => {
         { input: "false", want: "false", },
         { input: "5 > 4 == true", want: "((5 > 4) == true)", },
         { input: "5 < 4 != false ", want: "((5 < 4) != false)", },
+        { input: "1 + (2 + 3) + 4 ", want: "((1 + (2 + 3)) + 4)", },
 
     ];
     tests.forEach(tt => {
@@ -299,7 +300,7 @@ describe('OperatorPrecedenceParsing', () => {
             let l = new lexer.Lexer(tt.input);
             let p = parser.Parser.New(l);
             let program = p.ToProgram();
-            chai.expect(p.Errors().length).equal(0, p.Errors().toString());
+            chai.expect(p.Errors().length).equal(0, Helper.ToString(p.Errors()));
 
             chai.expect(program.String()).equal(tt.want);
         });
@@ -346,3 +347,14 @@ describe('ProgramToString', () => {
         });
     });
 })
+
+class Helper {
+    static ToString(values: string[]): string {
+        let s = "";
+
+        values.forEach(element => {
+            s += ("\t" + element + "\n");
+        });
+        return s;
+    }
+}

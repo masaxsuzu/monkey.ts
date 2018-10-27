@@ -92,7 +92,7 @@ export class PrefixExpression {
     Right: Expression
 
     ExpressionNode() { }
-    Node() :Node{
+    Node(): Node {
         return this;
     }
     TokenLiteral(): string { return this.Token.Literal; }
@@ -112,7 +112,7 @@ export class InfixExpression {
     Right: Expression
 
     ExpressionNode() { }
-    Node() :Node{
+    Node(): Node {
         return this;
     }
     TokenLiteral(): string { return this.Token.Literal; }
@@ -157,12 +157,12 @@ export class IntegerLiteral {
     String(): string { return this.Token.Literal; }
 }
 
-export class Bool{
+export class Bool {
     Token: Token
     Value: Boolean
 
-    ExpressionNode(){}
-    Node():Node{return this;}
-    TokenLiteral():string{return this.Token.Literal;}
-    String():string{return this.Token.Literal;}
+    ExpressionNode() { }
+    Node(): Node { return this; }
+    TokenLiteral(): string { return this.Token.Literal; }
+    String(): string { return this.Token.Literal; }
 }

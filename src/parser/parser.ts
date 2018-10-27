@@ -60,6 +60,7 @@ export class Parser {
         this.registerPrefix(token.TokenType.MINUS, () => { return this.parsePrefixExpression() });
         this.registerPrefix(token.TokenType.TRUE, () => { return this.parseBoolean() });
         this.registerPrefix(token.TokenType.FALSE, () => { return this.parseBoolean() });
+        this.registerPrefix(token.TokenType.LPAREN, () => { return this.parseGroupedExpression() });
 
         this.registerInfix(token.TokenType.PlUS, (left: ast.Expression) => { return this.parseInfixExpression(left); });
         this.registerInfix(token.TokenType.MINUS, (left: ast.Expression) => { return this.parseInfixExpression(left); });
@@ -224,6 +225,14 @@ export class Parser {
         return ex;
     }
 
+    private parseGroupedExpression(): ast.Expression {
+        this.NextToken();
+        let exp = this.ParseExpression(Priority.LOWEST);
+        if (!this.expectPeek(token.TokenType.RPAREN)) {
+            return null;
+        }
+        return exp;
+    }
     private NextToken() {
         this.currentToken = this.peekToken;
         this.peekToken = this.lex.NextToken();
