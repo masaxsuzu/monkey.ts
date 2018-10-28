@@ -33,12 +33,11 @@ function EvaluatePrefixExpression(op: string, right: object.Object): object.Obje
     switch (op) {
         case "!":
             return EvaluateBangOperatorExpression(right);
-            break;
+        case "-":
+            return EvaluateMinusOperatorExpression(right);
         default:
-            break;
+            NULL;
     }
-
-    return NULL;
 }
 
 function nativeBoolObject(input: boolean): object.Bool {
@@ -59,4 +58,11 @@ function EvaluateBangOperatorExpression(right: object.Object): object.Object {
         default:
             return FALSE;
     }
+}
+
+function EvaluateMinusOperatorExpression(right:object.Object):object.Object{
+    if(!(right instanceof object.Integer)){
+        return NULL;
+    }
+    return new object.Integer(-1 * right.Value);
 }

@@ -18,6 +18,8 @@ describe('Object', () => {
         { input: "!false", want: {value:true,literal:"true"}, },
         { input: "!5", want: {value:false,literal:"false"}, },
         { input: "!!5", want: {value:true,literal:"true"}, },
+        { input: "-5", want: {value:-5,literal:"-5"}, },
+        { input: "-15", want: {value:-15,literal:"-15"}, },
     ];
     tests.forEach(tt => {
         it(`${tt.input} -> ${tt.want.value}`, () => {
