@@ -15,7 +15,8 @@
   "scripts": {
     "start": "node bin/src/monkey.js",
     "build": "tsc",
-    "test": "tsc && mocha bin/test/*.test.js"
+    "test": "tsc && mocha bin/test/*.test.js",
+    "t": "tsc && mocha bin/test/evaluator.test.js"
   },
   "repository": {
     "type": "git",
