@@ -8,16 +8,18 @@ describe('IntegerObject', () => {
     interface test {
         name: string
         input: string
-        want: number
+        want: {value:number,literal:string}
     }
     let tests: test[] = [
-        { name:"one",input: "1", want: 1, },
+        { name:"one",input: "1", want: {value:1,literal:"1"}, },
+        { name:"two",input: "2", want: {value:2,literal:"2"}, },
     ];
     tests.forEach(tt => {
         it(`${tt.name}`, () => {
             let got = <object.Integer>Helper.Eval(tt.input);
 
-            chai.expect(got.Value).equal(tt.want);
+            chai.expect(got.Value,"Value").equal(tt.want.value);
+            chai.expect(got.Inspect(),"Inspect()").equal(tt.want.literal);
         });
     });
 })
