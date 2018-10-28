@@ -47,7 +47,15 @@ function EvaluatePrefixExpression(op: string, right: object.Object): object.Obje
 
 function EvaluateInfixExpression(op: string, left: object.Object, right: object.Object): object.Object {
     if (left instanceof object.Integer && right instanceof object.Integer) {
-        return EvaluateIntegerInfixExpression(op,left,right);
+        return EvaluateIntegerInfixExpression(op, left, right);
+    } 
+    // ch3p140
+    // As now now, Bool and Null objects are constant.
+    // So we can compare them by references. 
+    else if (op == "==") {
+        return nativeBoolObject(left == right)
+    } else if (op == "!=") {
+        return nativeBoolObject(left != right)
     }
     return NULL;
 }
@@ -89,6 +97,14 @@ function EvaluateIntegerInfixExpression(op: string, left: object.Integer, right:
             return new object.Integer(left.Value / right.Value);
         case "*":
             return new object.Integer(left.Value * right.Value);
+        case "<":
+            return nativeBoolObject(left.Value < right.Value);
+        case ">":
+            return nativeBoolObject(left.Value > right.Value);
+        case "==":
+            return nativeBoolObject(left.Value == right.Value);
+        case "!=":
+            return nativeBoolObject(left.Value != right.Value);
         default:
             return NULL;
     }

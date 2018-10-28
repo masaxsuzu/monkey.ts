@@ -19,7 +19,7 @@ describe('IntegerObject', () => {
         { input: "5-5", want: { value: 0, literal: "0" }, },
         { input: "5*5", want: { value: 25, literal: "25" }, },
         { input: "5/5", want: { value: 1, literal: "1" }, },
-        
+
     ];
     tests.forEach(tt => {
         let got = <object.Integer>Eval(tt.input);
@@ -36,19 +36,22 @@ describe('BoolObject', () => {
         { input: "false", want: { value: false, literal: "false" }, },
         { input: "!5", want: { value: false, literal: "false" }, },
         { input: "!!5", want: { value: true, literal: "true" }, },
-        // { input: "1<2", want: { value: true, literal: "false" }, },
-        // { input: "1>2", want: { value: false, literal: "false" }, },
-        // { input: "1<1", want: { value: false, literal: "false" }, },
-        // { input: "1>1", want: { value: false, literal: "false" }, },
-        // { input: "1==1", want: { value: true, literal: "false" }, },
-        // { input: "1!=1", want: { value: false, literal: "false" }, },
-        // { input: "1==2", want: { value: false, literal: "false" }, },
-        // { input: "1!=2", want: { value: true, literal: "false" }, },
+        { input: "1<2", want: { value: true, literal: "true" }, },
+        { input: "1>2", want: { value: false, literal: "false" }, },
+        { input: "1<1", want: { value: false, literal: "false" }, },
+        { input: "1>1", want: { value: false, literal: "false" }, },
+        { input: "1==1", want: { value: true, literal: "true" }, },
+        { input: "1!=1", want: { value: false, literal: "false" }, },
+        { input: "1==2", want: { value: false, literal: "false" }, },
+        { input: "1!=2", want: { value: true, literal: "true" }, },
+        { input: "true == true", want: { value: true, literal: "true" }, },
+
     ];
     tests.forEach(tt => {
         let got = <object.Bool>Eval(tt.input);
         it(`${tt.input} -> ${tt.want.value}`, () => {
             chai.expect(got.Value, "Value").equal(tt.want.value);
+            chai.expect(got.Inspect(), "Value").equal(tt.want.literal);
         })
     });
 })
