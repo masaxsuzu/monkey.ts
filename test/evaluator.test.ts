@@ -4,15 +4,17 @@ import * as parser from "../src/parser/parser"
 import * as object from "../src/object/object"
 import * as evaluator from "../src/evaluator/evaluator"
 
-describe('IntegerObject', () => {
+describe('Object', () => {
     interface test {
         name: string
         input: string
-        want: {value:number,literal:string}
+        want: {value:any,literal:string}
     }
     let tests: test[] = [
         { name:"one",input: "1", want: {value:1,literal:"1"}, },
         { name:"two",input: "2", want: {value:2,literal:"2"}, },
+        { name:"true",input: "true", want: {value:true,literal:"true"}, },
+        { name:"false",input: "false", want: {value:false,literal:"false"}, },
     ];
     tests.forEach(tt => {
         it(`${tt.name}`, () => {
