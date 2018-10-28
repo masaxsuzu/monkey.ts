@@ -1,7 +1,7 @@
 # Writing an interpreter in TypeScript
 This is an implementation of the Monkey interpreter from Thorsten Ball's book [Writing an interpreter in Go](https://interpreterbook.com).
 
-monkey interpreter implements a repl.
+Monkey interpreter implements a repl.
 ```
 monkey > let hello = monkey
 let hello = monkey;
