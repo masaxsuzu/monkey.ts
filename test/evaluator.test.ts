@@ -6,22 +6,24 @@ import * as evaluator from "../src/evaluator/evaluator"
 
 describe('Object', () => {
     interface test {
-        name: string
         input: string
         want: {value:any,literal:string}
     }
     let tests: test[] = [
-        { name:"one",input: "1", want: {value:1,literal:"1"}, },
-        { name:"two",input: "2", want: {value:2,literal:"2"}, },
-        { name:"true",input: "true", want: {value:true,literal:"true"}, },
-        { name:"false",input: "false", want: {value:false,literal:"false"}, },
+        { input: "1", want: {value:1,literal:"1"}, },
+        { input: "2", want: {value:2,literal:"2"}, },
+        { input: "true", want: {value:true,literal:"true"}, },
+        { input: "false", want: {value:false,literal:"false"}, },
+        { input: "!true", want: {value:false,literal:"false"}, },
+        { input: "!false", want: {value:true,literal:"true"}, },
+        { input: "!5", want: {value:false,literal:"false"}, },
+        { input: "!!5", want: {value:true,literal:"true"}, },
     ];
     tests.forEach(tt => {
-        it(`${tt.name}`, () => {
+        it(`${tt.input} -> ${tt.want.value}`, () => {
             let got = <object.Integer>Helper.Eval(tt.input);
 
             chai.expect(got.Value,"Value").equal(tt.want.value);
-            chai.expect(got.Inspect(),"Inspect()").equal(tt.want.literal);
         });
     });
 })

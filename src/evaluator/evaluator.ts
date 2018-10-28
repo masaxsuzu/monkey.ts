@@ -12,8 +12,11 @@ export function Evaluate(node: ast.Node): object.Object {
         return Evaluate(node.Expression.Node());
     } else if (node instanceof ast.IntegerLiteral) {
         return new object.Integer(node.Value);
-    }else if (node instanceof ast.Bool) {
+    } else if (node instanceof ast.Bool) {
         return nativeBoolObject(node.Value.valueOf());
+    } else if (node instanceof ast.PrefixExpression) {
+        let right = Evaluate(node.Right.Node());
+        return EvaluatePrefixExpression(node.Operator, right);
     }
     return NULL;
 }
@@ -26,9 +29,34 @@ function EvaluateStatements(statements: ast.Statement[]): object.Object {
     return v;
 }
 
-function nativeBoolObject(input:boolean):object.Bool{
-    if(input){
+function EvaluatePrefixExpression(op: string, right: object.Object): object.Object {
+    switch (op) {
+        case "!":
+            return EvaluateBangOperatorExpression(right);
+            break;
+        default:
+            break;
+    }
+
+    return NULL;
+}
+
+function nativeBoolObject(input: boolean): object.Bool {
+    if (input) {
         return TRUE;
     }
     return FALSE;
+}
+
+function EvaluateBangOperatorExpression(right: object.Object): object.Object {
+    switch (right) {
+        case TRUE:
+            return FALSE;
+        case FALSE:
+            return TRUE;
+        case NULL:
+            return TRUE;
+        default:
+            return FALSE;
+    }
 }
