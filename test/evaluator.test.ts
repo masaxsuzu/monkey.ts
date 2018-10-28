@@ -15,6 +15,10 @@ describe('IntegerObject', () => {
         { input: "1", want: { value: 1, literal: "1" }, },
         { input: "-5", want: { value: -5, literal: "-5" }, },
         { input: "-15", want: { value: -15, literal: "-15" }, },
+        { input: "5+5", want: { value: 10, literal: "10" }, },
+        { input: "5-5", want: { value: 0, literal: "0" }, },
+        { input: "5*5", want: { value: 25, literal: "25" }, },
+        { input: "5/5", want: { value: 1, literal: "1" }, },
         
     ];
     tests.forEach(tt => {
@@ -53,6 +57,10 @@ describe('NullObject', () => {
 
     let tests: test[] = [
         { input: "-true", want: { value: object.Type.NULL_OBJ, literal: "null" }, },
+        { input: "true + 1", want: { value: object.Type.NULL_OBJ, literal: "null" }, },
+        { input: "true - 1", want: { value: object.Type.NULL_OBJ, literal: "null" }, },
+        { input: "true * 1", want: { value: object.Type.NULL_OBJ, literal: "null" }, },
+        { input: "true / 1", want: { value: object.Type.NULL_OBJ, literal: "null" }, },
     ];
     tests.forEach(tt => {
         let got = <object.Null>Eval(tt.input);

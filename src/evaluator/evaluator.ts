@@ -17,6 +17,11 @@ export function Evaluate(node: ast.Node): object.Object {
     } else if (node instanceof ast.PrefixExpression) {
         let right = Evaluate(node.Right.Node());
         return EvaluatePrefixExpression(node.Operator, right);
+    } else if (node instanceof ast.InfixExpression) {
+        let right = Evaluate(node.Right.Node());
+        let left = Evaluate(node.Left.Node());
+
+        return EvaluateInfixExpression(node.Operator, left, right);
     }
     return NULL;
 }
@@ -40,6 +45,13 @@ function EvaluatePrefixExpression(op: string, right: object.Object): object.Obje
     }
 }
 
+function EvaluateInfixExpression(op: string, left: object.Object, right: object.Object): object.Object {
+    if (left instanceof object.Integer && right instanceof object.Integer) {
+        return EvaluateIntegerInfixExpression(op,left,right);
+    }
+    return NULL;
+}
+
 function nativeBoolObject(input: boolean): object.Bool {
     if (input) {
         return TRUE;
@@ -60,9 +72,24 @@ function EvaluateBangOperatorExpression(right: object.Object): object.Object {
     }
 }
 
-function EvaluateMinusOperatorExpression(right:object.Object):object.Object{
-    if(!(right instanceof object.Integer)){
+function EvaluateMinusOperatorExpression(right: object.Object): object.Object {
+    if (!(right instanceof object.Integer)) {
         return NULL;
     }
     return new object.Integer(-1 * right.Value);
+}
+
+function EvaluateIntegerInfixExpression(op: string, left: object.Integer, right: object.Integer): object.Object {
+    switch (op) {
+        case "+":
+            return new object.Integer(left.Value + right.Value);
+        case "-":
+            return new object.Integer(left.Value - right.Value);
+        case "/":
+            return new object.Integer(left.Value / right.Value);
+        case "*":
+            return new object.Integer(left.Value * right.Value);
+        default:
+            return NULL;
+    }
 }
