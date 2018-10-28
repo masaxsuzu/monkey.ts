@@ -1,7 +1,5 @@
-# monkey.ts
-monkey interpreter in TypeScript
-
-Inspired by https://github.com/masa-suzu/monkey.
+# Writing an interpreter in TypeScript
+This is an implementation of the Monkey interpreter from Thorsten Ball's book [Writing an interpreter in Go](https://interpreterbook.com).
 
 monkey interpreter implements a repl.
 ```
