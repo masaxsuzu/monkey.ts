@@ -2,6 +2,7 @@ import * as readline from 'readline';
 import { Lexer } from "../src/lexer/lexer"
 import { TokenType } from "../src/token/token"
 import { Parser } from './parser/parser';
+import { Evaluate } from './evaluator/evaluator';
 
 interface writer{
     write(data: string | Buffer, key?: readline.Key);
@@ -15,7 +16,9 @@ function ep(input: string,o:writer) {
             printParseErrors(p.Errors(),o);
             return;
         }
-        o.write(program.String());
+
+        let got = Evaluate(program);
+        o.write(got.Inspect());
         o.write("\n");
 }
 
