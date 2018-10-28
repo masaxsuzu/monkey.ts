@@ -125,6 +125,9 @@ export class Parser {
             return null;
         }
 
+        this.NextToken();
+        ls.Value = this.ParseExpression(Priority.LOWEST);
+
         while (!this.currentTokenIs(token.TokenType.SEMICOLON)) {
             this.NextToken();
         }
@@ -137,7 +140,8 @@ export class Parser {
 
         this.NextToken();
 
-        // TODO as of now, skip if current token is not SEMICOLON.
+        s.ReturnValue = this.ParseExpression(Priority.LOWEST);
+
         while (!this.currentTokenIs(token.TokenType.SEMICOLON)) {
             this.NextToken();
         }

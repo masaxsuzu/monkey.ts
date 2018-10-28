@@ -106,7 +106,7 @@ describe('ParseLetStatements', () => {
     interface test {
         name: string;
         input: string;
-        wants: string[];
+        wants: {name:string,value:string}[];
     }
     let tests: test[] = [
         {
@@ -116,12 +116,12 @@ describe('ParseLetStatements', () => {
             let y = 10;
             let foobar = 114514;
             `,
-            wants: ["x", "y", "foobar"]
+            wants: [{name:"x",value:"5"},{name:"y",value:"10"}, {name:"foobar",value:"114514"}]
         } as test,
         {
             name: "2 let statements",
             input: `let x = 114;let y = 514;`,
-            wants: ["x", "y"]
+            wants: [{name:"x",value:"114"},{name:"y",value:"514"}]
         } as test,
     ];
     tests.forEach(tt => {
@@ -137,8 +137,8 @@ describe('ParseLetStatements', () => {
                 let statement: ast.LetStatement = program.Statements[`${index}`];
 
                 chai.expect(statement.Token.Type, "type").is.not.null;
-                chai.expect(statement.Name.Value, "value of name").equal(want);
-                chai.expect(statement.Name.TokenLiteral(), "literal of name").equal(want);
+                chai.expect(statement.Name.Value, "value of name").equal(want.name);
+                chai.expect(statement.Value.Node().String(), "literal of name").equal(want.value);
             })
         })
         it(tt.name + " have no error", () => {
@@ -479,45 +479,6 @@ describe('CallExpressionParsing', () => {
             let call= <ast.CallExpression>s.Expression;
             chai.expect(call.Function.Node().String(),"function").equals(tt.want.caller);
 
-        });
-    });
-})
-
-describe('ProgramToString', () => {
-    interface test {
-        name: string
-        input: ast.Program
-        want: string
-    }
-    let tests: test[] = [
-        {
-            name: "1 let statement",
-            input: To.ProgramFrom(
-                [
-                    To.LetStatementFrom(
-                        new token.Token(token.TokenType.LET, "let"),
-                        To.IdentifierFrom(new token.Token(token.TokenType.IDENT, "myVar"), "myVar"),
-                        To.IdentifierFrom(new token.Token(token.TokenType.IDENT, "anotherVar"), "anotherVar")),
-                ]
-            ),
-            want: 'let myVar = anotherVar;',
-        } as test,
-        {
-            name: "1 return statement",
-            input: To.ProgramFrom(
-                [
-                    To.ReturnStatementFrom(
-                        new token.Token(token.TokenType.RETURN, "return"),
-                        To.IdentifierFrom(new token.Token(token.TokenType.IDENT, "x"), "x"),
-                    ),
-                ]),
-            want: 'return x;',
-        } as test,
-    ];
-
-    tests.forEach(tt => {
-        it(tt.name, () => {
-            chai.expect(tt.input.String()).equals(tt.want)
         });
     });
 })
