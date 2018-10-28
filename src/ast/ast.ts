@@ -236,3 +236,29 @@ export class FunctionLiteral {
         return out;
     }
 }
+
+export class CallExpression{
+    Token:Token
+    Function:Expression
+    Arguments:Expression[]
+
+    ExpressionNode(){}
+    TokenLiteral():string{ return this.Token.Literal ;}
+    Node():Node{
+        return this;
+    }
+    String():string{
+        let out = "";
+        let args:string[] = [];
+        this.Arguments.forEach(arg => {
+            args.push(arg.Node().String());
+        });
+
+        out += this.Function.Node().String();
+        out += "(";
+        out += args.join(", ");
+        out += ")"
+
+        return out;
+    }
+}

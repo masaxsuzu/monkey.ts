@@ -26,6 +26,7 @@ var precedences = new Map<token.TokenType, Priority>([
     [token.TokenType.MINUS, Priority.SUM],
     [token.TokenType.SLASH, Priority.PRODUCT],
     [token.TokenType.ASTERISK, Priority.PRODUCT],
+    [token.TokenType.LPAREN, Priority.CALL],
 ]);
 
 export class Parser {
@@ -72,6 +73,7 @@ export class Parser {
         this.registerInfix(token.TokenType.NOT_EQ, (left: ast.Expression) => { return this.parseInfixExpression(left); });
         this.registerInfix(token.TokenType.LT, (left: ast.Expression) => { return this.parseInfixExpression(left); });
         this.registerInfix(token.TokenType.GT, (left: ast.Expression) => { return this.parseInfixExpression(left); });
+        this.registerInfix(token.TokenType.LPAREN, (left: ast.Expression) => { return this.parseCallExpression(left); });
 
     }
 
@@ -329,6 +331,37 @@ export class Parser {
         }
 
         return identifiers;
+    }
+
+    private parseCallExpression(f:ast.Expression):ast.Expression{
+        let exp = new ast.CallExpression();
+        exp.Token = this.currentToken;
+        exp.Function = f;
+        exp.Arguments = this.parseCallArguments();
+        return exp;
+    }
+    private parseCallArguments():ast.Expression[]{
+        let args :ast.Expression[] = [];
+
+        if(this.peekTokenIs(token.TokenType.RPAREN)){
+            this.NextToken();
+            return args
+        }
+
+        this.NextToken();
+        args.push(this.ParseExpression(Priority.LOWEST));
+
+        while(this.peekTokenIs(token.TokenType.COMMA)){
+            this.NextToken();
+            this.NextToken();
+            args.push(this.ParseExpression(Priority.LOWEST));
+        }
+
+        if (!this.expectPeek(token.TokenType.RPAREN)){
+            return null;
+        }
+
+        return args;
     }
 
     private NextToken() {

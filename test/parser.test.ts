@@ -360,6 +360,10 @@ describe('OperatorPrecedenceParsing', () => {
         { input: "5 > 4 == true", want: "((5 > 4) == true)", },
         { input: "5 < 4 != false ", want: "((5 < 4) != false)", },
         { input: "1 + (2 + 3) + 4 ", want: "((1 + (2 + 3)) + 4)", },
+        { input: "a + add(b * c) + d", want: "((a + add((b * c))) + d)", },
+        { input: "a + add(b * c) + d", want: "((a + add((b * c))) + d)", },
+        { input: "add(a,b,1,2*3,4+5,add(6,7*8))", want: "add(a, b, 1, (2 * 3), (4 + 5), add(6, (7 * 8)))", },
+        { input: "add(a + b + c+ d /f +g)", want: "add(((((a + b) + c) + (d / f)) + g))", },
 
     ];
     tests.forEach(tt => {
@@ -451,6 +455,33 @@ describe('FunctionLiteralParsing', () => {
     });
 })
 
+describe('CallExpressionParsing', () => {
+    interface test {
+        input: string
+        want: {caller:string,args:string[]}
+    }
+    let tests: test[] = [
+        {
+            input: "add(x , y);",
+            want: {caller:"add",args:["x","y"]},
+        } as test,
+    ];
+    tests.forEach(tt => {
+        it(`${tt.input}`, () => {
+            let l = new lexer.Lexer(tt.input);
+            let p = parser.Parser.New(l);
+            let program = p.ToProgram();
+            chai.expect(p.Errors().length).equal(0, Helper.ToString(p.Errors()));
+
+            chai.expect(program.Statements.length).equal(1);
+
+            let s = <ExpressionStatement>program.Statements[0];
+            let call= <ast.CallExpression>s.Expression;
+            chai.expect(call.Function.Node().String(),"function").equals(tt.want.caller);
+
+        });
+    });
+})
 
 describe('ProgramToString', () => {
     interface test {
