@@ -362,8 +362,13 @@ describe('OperatorPrecedenceParsing', () => {
         { input: "1 + (2 + 3) + 4 ", want: "((1 + (2 + 3)) + 4)", },
         { input: "a + add(b * c) + d", want: "((a + add((b * c))) + d)", },
         { input: "a + add(b * c) + d", want: "((a + add((b * c))) + d)", },
+        { input: "let x =1", want: "let x = 1;", },
         { input: "add(a,b,1,2*3,4+5,add(6,7*8))", want: "add(a, b, 1, (2 * 3), (4 + 5), add(6, (7 * 8)))", },
         { input: "add(a + b + c+ d /f +g)", want: "add(((((a + b) + c) + (d / f)) + g))", },
+        { input: "fn(x,y){return x+y}", want: "fn(x, y) return (x + y);", },
+        { input: "if(x){return true}", want: "if x return true;", },
+        { input: "if(x){true}else{false}", want: "if x true else false", },
+        { input: "if(x){true}", want: "if x true", },
 
     ];
     tests.forEach(tt => {

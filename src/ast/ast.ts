@@ -179,7 +179,7 @@ export class IfExpression {
         return this;
     }
     String(): string {
-        var out = "if";
+        var out = "if ";
         out += this.Condition.Node().String();
         out += " "
         out += this.Consequence.Node().String();

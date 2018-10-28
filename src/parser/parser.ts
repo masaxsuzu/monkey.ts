@@ -128,7 +128,7 @@ export class Parser {
         this.NextToken();
         ls.Value = this.ParseExpression(Priority.LOWEST);
 
-        while (!this.currentTokenIs(token.TokenType.SEMICOLON)) {
+        if(this.peekTokenIs(token.TokenType.SEMICOLON)){
             this.NextToken();
         }
         return ls;
@@ -142,7 +142,7 @@ export class Parser {
 
         s.ReturnValue = this.ParseExpression(Priority.LOWEST);
 
-        while (!this.currentTokenIs(token.TokenType.SEMICOLON)) {
+        if(this.peekTokenIs(token.TokenType.SEMICOLON)){
             this.NextToken();
         }
 
@@ -291,6 +291,7 @@ export class Parser {
     }
     private parseFunctionLiteral():ast.Expression{
         let fn = new ast.FunctionLiteral();
+        fn.Token = this.currentToken;
         if(!this.expectPeek(token.TokenType.LPAREN)){
             return null;
         }
