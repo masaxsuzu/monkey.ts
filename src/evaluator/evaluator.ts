@@ -22,8 +22,32 @@ export function Evaluate(node: ast.Node): object.Object {
         let left = Evaluate(node.Left.Node());
 
         return EvaluateInfixExpression(node.Operator, left, right);
+    } else if (node instanceof ast.BlockStatement) {
+        return EvaluateStatements(node.Statements);
+    } else if (node instanceof ast.IfExpression) {
+        let condition = Evaluate(node.Condition.Node());
+        if (isTruth(condition)) {
+            return Evaluate(node.Consequence)
+        } else if (node.Alternative != null) {
+            return Evaluate(node.Alternative);
+        } else {
+            return NULL;
+        }
     }
     return NULL;
+}
+
+function isTruth(obj: object.Object): boolean {
+    switch (obj) {
+        case NULL:
+            return false;
+        case TRUE:
+            return true;
+        case FALSE:
+            return false;
+        default:
+            return true;
+    }
 }
 
 function EvaluateStatements(statements: ast.Statement[]): object.Object {
@@ -48,7 +72,7 @@ function EvaluatePrefixExpression(op: string, right: object.Object): object.Obje
 function EvaluateInfixExpression(op: string, left: object.Object, right: object.Object): object.Object {
     if (left instanceof object.Integer && right instanceof object.Integer) {
         return EvaluateIntegerInfixExpression(op, left, right);
-    } 
+    }
     // ch3p140
     // As now now, Bool and Null objects are constant.
     // So we can compare them by references. 

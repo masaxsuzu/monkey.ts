@@ -19,7 +19,8 @@ describe('IntegerObject', () => {
         { input: "5-5", want: { value: 0, literal: "0" }, },
         { input: "5*5", want: { value: 25, literal: "25" }, },
         { input: "5/5", want: { value: 1, literal: "1" }, },
-
+        { input: "if(10){10}", want: { value: 10, literal: "10" }, },
+        { input: "if(!10){10}else{5}", want: { value: 5, literal: "5" }, },
     ];
     tests.forEach(tt => {
         let got = <object.Integer>Eval(tt.input);
@@ -45,6 +46,9 @@ describe('BoolObject', () => {
         { input: "1==2", want: { value: false, literal: "false" }, },
         { input: "1!=2", want: { value: true, literal: "true" }, },
         { input: "true == true", want: { value: true, literal: "true" }, },
+        { input: "if(true){false}", want: { value: false, literal: "false" }, },
+        { input: "if(false){10}else{true}", want: { value: true, literal: "true" }, },
+
 
     ];
     tests.forEach(tt => {
@@ -64,6 +68,8 @@ describe('NullObject', () => {
         { input: "true - 1", want: { value: object.Type.NULL_OBJ, literal: "null" }, },
         { input: "true * 1", want: { value: object.Type.NULL_OBJ, literal: "null" }, },
         { input: "true / 1", want: { value: object.Type.NULL_OBJ, literal: "null" }, },
+        { input: "if(false){10}", want: { value: object.Type.NULL_OBJ, literal: "null" }, },
+
     ];
     tests.forEach(tt => {
         let got = <object.Null>Eval(tt.input);
