@@ -63,13 +63,7 @@ describe('BoolObject', () => {
 describe('NullObject', () => {
 
     let tests: test[] = [
-        { input: "-true", want: { value: object.Type.NULL_OBJ, literal: "null" }, },
-        { input: "true + 1", want: { value: object.Type.NULL_OBJ, literal: "null" }, },
-        { input: "true - 1", want: { value: object.Type.NULL_OBJ, literal: "null" }, },
-        { input: "true * 1", want: { value: object.Type.NULL_OBJ, literal: "null" }, },
-        { input: "true / 1", want: { value: object.Type.NULL_OBJ, literal: "null" }, },
         { input: "if(false){10}", want: { value: object.Type.NULL_OBJ, literal: "null" }, },
-
     ];
     tests.forEach(tt => {
         let got = <object.Null>Eval(tt.input);
@@ -87,14 +81,33 @@ describe('ReturnObject', () => {
         { input: `if(10){if(10){return 1000;}return 1;}`, want: { value: 1000, literal: "1000" }, },
     ];
     tests.forEach(tt => {
-        let got = <object.ReturnValue>Eval(tt.input);
+        let got = Eval(tt.input);
         it(`${tt.input} -> ${tt.want.value}`, () => {
-            chai.expect(got.Value.Inspect()).equal(tt.want.literal);
+            chai.expect(got.Inspect()).equal(tt.want.literal);
         })
     });
 })
 
-function Eval(input: string): Object {
+describe('ErrorObject', () => {
+
+    let tests: test[] = [
+
+        { input: " 5 + true;", want: { value: "type mismatch: INTEGER + BOOL", literal: "" }, },
+        { input: " -true;", want: { value: "unknown operator: -BOOL", literal: "" }, },
+        { input: " true + true;", want: { value: "unknown operator: BOOL + BOOL", literal: "" }, },
+        { input: " return true + true;", want: { value: "unknown operator: BOOL + BOOL", literal: "" }, },
+        { input: " return true + true;return 1;", want: { value: "unknown operator: BOOL + BOOL", literal: "" }, },
+        { input: " if(10){if(9){return true +true;}return 1}", want: { value: "unknown operator: BOOL + BOOL", literal: "" }, },
+    ];
+    tests.forEach(tt => {
+        let got = <object.Error>Eval(tt.input);
+        it(`${tt.input} -> ${tt.want.value}`, () => {
+            chai.expect(got.Message).equal(tt.want.value);
+        })
+    });
+})
+
+function Eval(input: string): object.Object {
     let l = new lexer.Lexer(input);
     let p = parser.Parser.New(l);
     let program = p.ToProgram();

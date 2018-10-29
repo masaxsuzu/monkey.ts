@@ -4,7 +4,8 @@ export enum Type {
     NULL_OBJ = "NULL",
     INTEGER_OBJ = "INTEGER",
     BOOL_OBJ = "BOOL",
-    RETURN_VALUE_OBJ = "RETURN_VALUE"
+    RETURN_VALUE_OBJ = "RETURN_VALUE",
+    ERROR_OBJ = "ERROR",
 }
 
 export interface Object {
@@ -44,6 +45,12 @@ export class ReturnValue {
     Value: Object
     Type(): Type { return Type.RETURN_VALUE_OBJ; }
     Inspect(): string { return this.Value.Inspect(); }
+}
+
+export class Error{
+    Message:string
+    Type():Type{return Type.ERROR_OBJ;}
+    Inspect():string{return `ERROR: ${this.Message}`;}
 }
 
 export class Null {

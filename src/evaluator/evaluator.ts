@@ -13,6 +13,9 @@ export function Evaluate(node: ast.Node): object.Object {
         return Evaluate(node.Expression.Node());
     } else if (node instanceof ast.ReturnStatement) {
         let v = Evaluate(node.ReturnValue.Node());
+        if (isError(v)){
+            return v;
+        }
         let rv = new object.ReturnValue();
         rv.Value = v;
         return rv;
@@ -22,15 +25,27 @@ export function Evaluate(node: ast.Node): object.Object {
         return nativeBoolObject(node.Value.valueOf());
     } else if (node instanceof ast.PrefixExpression) {
         let right = Evaluate(node.Right.Node());
+        if (isError(right)){
+            return right;
+        }
         return EvaluatePrefixExpression(node.Operator, right);
     } else if (node instanceof ast.InfixExpression) {
         let right = Evaluate(node.Right.Node());
+        if (isError(right)){
+            return right;
+        }
         let left = Evaluate(node.Left.Node());
+        if (isError(left)){
+            return left;
+        }
         return EvaluateInfixExpression(node.Operator, left, right);
     } else if (node instanceof ast.BlockStatement) {
         return EvaluateBlockStatement(node);
     } else if (node instanceof ast.IfExpression) {
         let condition = Evaluate(node.Condition.Node());
+        if (isError(condition)){
+            return condition;
+        }
         if (isTruth(condition)) {
             return Evaluate(node.Consequence)
         } else if (node.Alternative != null) {
@@ -55,18 +70,27 @@ function isTruth(obj: object.Object): boolean {
     }
 }
 
+function isError(obj: object.Object): boolean {
+    if (obj != null) {
+        return obj.Type() == object.Type.ERROR_OBJ;
+    }
+
+    return false;
+}
+
 function EvaluateProgram(program: ast.Program): object.Object {
     let obj: object.Object;
 
-    program.Statements.forEach(statement => {
+    for (let index = 0; index < program.Statements.length; index++) {
+        const statement = program.Statements[index];
         obj = Evaluate(statement.Node());
-        if (obj.Inspect() == "1000") {
-            return obj;
-        }
         if (obj instanceof object.ReturnValue) {
             return obj.Value;
         }
-    });
+        if (obj instanceof object.Error) {
+            return obj;
+        }
+    }
 
     return obj;
 }
@@ -78,7 +102,7 @@ function EvaluatePrefixExpression(op: string, right: object.Object): object.Obje
         case "-":
             return EvaluateMinusOperatorExpression(right);
         default:
-            NULL;
+            return NewError(`unknown operator: ${op + right.Type()}`);
     }
 }
 
@@ -93,8 +117,10 @@ function EvaluateInfixExpression(op: string, left: object.Object, right: object.
         return nativeBoolObject(left == right)
     } else if (op == "!=") {
         return nativeBoolObject(left != right)
+    } else if (left.Type() != right.Type()) {
+        return NewError(`type mismatch: ${left.Type()} ${op} ${right.Type()}`);
     }
-    return NULL;
+    return NewError(`unknown operator: ${left.Type()} ${op} ${right.Type()}`);
 }
 
 function EvaluateBlockStatement(block: BlockStatement): object.Object {
@@ -102,8 +128,10 @@ function EvaluateBlockStatement(block: BlockStatement): object.Object {
     for (let index = 0; index < block.Statements.length; index++) {
         const s = block.Statements[index];
         v = Evaluate(s.Node());
-
         if (v instanceof object.ReturnValue) {
+            return v;
+        }
+        if (v instanceof object.Error) {
             return v;
         }
     }
@@ -133,7 +161,7 @@ function EvaluateBangOperatorExpression(right: object.Object): object.Object {
 
 function EvaluateMinusOperatorExpression(right: object.Object): object.Object {
     if (!(right instanceof object.Integer)) {
-        return NULL;
+        return NewError(`unknown operator: -${right.Type()}`);
     }
     return new object.Integer(-1 * right.Value);
 }
@@ -157,6 +185,12 @@ function EvaluateIntegerInfixExpression(op: string, left: object.Integer, right:
         case "!=":
             return nativeBoolObject(left.Value != right.Value);
         default:
-            return NULL;
+            return NewError(`unknown operator: ${left.Type()} ${op} ${right.Type()}`);
     }
+}
+
+function NewError(msg: string): object.Error {
+    let e = new object.Error();
+    e.Message = msg;
+    return e;
 }
