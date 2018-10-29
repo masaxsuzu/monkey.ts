@@ -80,6 +80,19 @@ describe('NullObject', () => {
     });
 })
 
+describe('ReturnObject', () => {
+
+    let tests: test[] = [
+        { input: "return 1;", want: { value: 1, literal: "1" }, },
+        { input: `if(10){if(10){return 1000;}return 1;}`, want: { value: 1000, literal: "1000" }, },
+    ];
+    tests.forEach(tt => {
+        let got = <object.ReturnValue>Eval(tt.input);
+        it(`${tt.input} -> ${tt.want.value}`, () => {
+            chai.expect(got.Value.Inspect()).equal(tt.want.literal);
+        })
+    });
+})
 
 function Eval(input: string): Object {
     let l = new lexer.Lexer(input);

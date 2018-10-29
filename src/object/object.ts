@@ -3,7 +3,8 @@ import { inspect } from "util";
 export enum Type {
     NULL_OBJ = "NULL",
     INTEGER_OBJ = "INTEGER",
-    BOOL_OBJ = "BOOL"
+    BOOL_OBJ = "BOOL",
+    RETURN_VALUE_OBJ = "RETURN_VALUE"
 }
 
 export interface Object {
@@ -37,6 +38,12 @@ export class Bool {
     Inspect(): string {
         return `${this.Value}`;
     }
+}
+
+export class ReturnValue {
+    Value: Object
+    Type(): Type { return Type.RETURN_VALUE_OBJ; }
+    Inspect(): string { return this.Value.Inspect(); }
 }
 
 export class Null {

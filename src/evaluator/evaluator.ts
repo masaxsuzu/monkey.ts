@@ -1,5 +1,6 @@
 import * as ast from "../ast/ast"
 import * as object from "../object/object"
+import { BlockStatement } from "../ast/ast";
 
 const TRUE = new object.Bool(true);
 const FALSE = new object.Bool(false);
@@ -7,9 +8,14 @@ const NULL = new object.Null();
 
 export function Evaluate(node: ast.Node): object.Object {
     if (node instanceof ast.Program) {
-        return EvaluateStatements(node.Statements);
+        return EvaluateProgram(node);
     } else if (node instanceof ast.ExpressionStatement) {
         return Evaluate(node.Expression.Node());
+    } else if (node instanceof ast.ReturnStatement) {
+        let v = Evaluate(node.ReturnValue.Node());
+        let rv = new object.ReturnValue();
+        rv.Value = v;
+        return rv;
     } else if (node instanceof ast.IntegerLiteral) {
         return new object.Integer(node.Value);
     } else if (node instanceof ast.Bool) {
@@ -20,10 +26,9 @@ export function Evaluate(node: ast.Node): object.Object {
     } else if (node instanceof ast.InfixExpression) {
         let right = Evaluate(node.Right.Node());
         let left = Evaluate(node.Left.Node());
-
         return EvaluateInfixExpression(node.Operator, left, right);
     } else if (node instanceof ast.BlockStatement) {
-        return EvaluateStatements(node.Statements);
+        return EvaluateBlockStatement(node);
     } else if (node instanceof ast.IfExpression) {
         let condition = Evaluate(node.Condition.Node());
         if (isTruth(condition)) {
@@ -50,12 +55,20 @@ function isTruth(obj: object.Object): boolean {
     }
 }
 
-function EvaluateStatements(statements: ast.Statement[]): object.Object {
-    let v: object.Object;
-    statements.forEach(s => {
-        v = Evaluate(s.Node());
+function EvaluateProgram(program: ast.Program): object.Object {
+    let obj: object.Object;
+
+    program.Statements.forEach(statement => {
+        obj = Evaluate(statement.Node());
+        if (obj.Inspect() == "1000") {
+            return obj;
+        }
+        if (obj instanceof object.ReturnValue) {
+            return obj.Value;
+        }
     });
-    return v;
+
+    return obj;
 }
 
 function EvaluatePrefixExpression(op: string, right: object.Object): object.Object {
@@ -75,13 +88,27 @@ function EvaluateInfixExpression(op: string, left: object.Object, right: object.
     }
     // ch3p140
     // As now now, Bool and Null objects are constant.
-    // So we can compare them by references. 
+    // So we can compare them by references.
     else if (op == "==") {
         return nativeBoolObject(left == right)
     } else if (op == "!=") {
         return nativeBoolObject(left != right)
     }
     return NULL;
+}
+
+function EvaluateBlockStatement(block: BlockStatement): object.Object {
+    let v: object.Object;
+    for (let index = 0; index < block.Statements.length; index++) {
+        const s = block.Statements[index];
+        v = Evaluate(s.Node());
+
+        if (v instanceof object.ReturnValue) {
+            return v;
+        }
+    }
+    return v;
+
 }
 
 function nativeBoolObject(input: boolean): object.Bool {
