@@ -75,7 +75,7 @@ let f = fn(x){
 f(1)(2); // -> 5
 ```
 
-  Recursive function
+* Recursive function
 ```
 let fib = fn(x){
     if(x < 2) {
