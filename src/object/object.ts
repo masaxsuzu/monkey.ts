@@ -1,10 +1,12 @@
-import { inspect } from "util";
+import * as ast from "../ast/ast"
+import { Environment } from "./environment";
 
 export enum Type {
     NULL_OBJ = "NULL",
     INTEGER_OBJ = "INTEGER",
     BOOL_OBJ = "BOOL",
     RETURN_VALUE_OBJ = "RETURN_VALUE",
+    FUNCTION_OBJ = "FUNCTION_VALUE",
     ERROR_OBJ = "ERROR",
 }
 
@@ -47,6 +49,28 @@ export class ReturnValue {
     Inspect(): string { return this.Value.Inspect(); }
 }
 
+export class Function{
+    Parameters: ast.Identifier[]
+    Body: ast.BlockStatement
+    Env: Environment
+
+    Type():Type{return Type.FUNCTION_OBJ;}
+    Inspect():string{
+        let out = "";
+        let params:string[] = [];
+        this.Parameters.forEach(element => {
+            params.push(element.String());
+        });
+
+        out += "fn";
+        out += "(";
+        out += params.join(", ");
+        out += "{\n";
+        out += this.Body.String();
+        out += "\n}";
+        return out;
+    }
+}
 export class Error{
     Message:string
     Type():Type{return Type.ERROR_OBJ;}

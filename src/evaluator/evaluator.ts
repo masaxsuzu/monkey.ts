@@ -1,6 +1,6 @@
 import * as ast from "../ast/ast"
 import * as object from "../object/object"
-import { Environment } from "../object/environment"
+import { Environment,NewEnvironment,NewEnclosedEnvironment } from "../object/environment"
 import { BlockStatement } from "../ast/ast";
 
 const TRUE = new object.Bool(true);
@@ -39,6 +39,13 @@ export function Evaluate(node: ast.Node, e: Environment): object.Object {
         return nativeBoolObject(node.Value.valueOf());
     } else if (node instanceof ast.Identifier) {
         return EvaluateIdentifier(node,e);
+    } else if (node instanceof ast.FunctionLiteral){
+        let p = node.Parameters;
+        let body = node.Body;
+        let f = new object.Function();
+        f.Parameters = p;
+        f.Body = body;
+        return f;
     } else if (node instanceof ast.PrefixExpression) {
         let right = Evaluate(node.Right.Node(), e);
         if (isError(right)) {
@@ -55,7 +62,18 @@ export function Evaluate(node: ast.Node, e: Environment): object.Object {
             return left;
         }
         return EvaluateInfixExpression(node.Operator, left, right);
-    } else if (node instanceof ast.IfExpression) {
+    } else if (node instanceof ast.CallExpression){
+        let f = Evaluate(node.Function.Node(),e);
+        if (isError(f)){
+            return f;
+        }
+        let args = EvaluateExpression(node.Arguments,e);
+        if (args.length == 1 && isError(args[0])){
+            return args[0];
+        }
+
+        return applyFunction(f,args);
+    }else if (node instanceof ast.IfExpression) {
         let condition = Evaluate(node.Condition.Node(), e);
         if (isError(condition)) {
             return condition;
@@ -145,6 +163,18 @@ function EvaluateInfixExpression(op: string, left: object.Object, right: object.
     return NewError(`unknown operator: ${left.Type()} ${op} ${right.Type()}`);
 }
 
+function EvaluateExpression(expressions:ast.Expression[],e:Environment):object.Object[]{
+    let results = []
+    expressions.forEach(element => {
+        let got = Evaluate(element.Node(),e);
+        if(isError(got)){
+            return results;
+        }
+        results.push(got);
+    })
+    return results;
+}
+
 function EvaluateBlockStatement(block: BlockStatement, e: Environment): object.Object {
     let v: object.Object;
     for (let index = 0; index < block.Statements.length; index++) {
@@ -209,6 +239,32 @@ function EvaluateIntegerInfixExpression(op: string, left: object.Integer, right:
         default:
             return NewError(`unknown operator: ${left.Type()} ${op} ${right.Type()}`);
     }
+}
+
+function applyFunction(f:object.Object,args:object.Object[]):object.Object{
+    if (f instanceof object.Function){
+        let newEnv = ExtendedFunctionEnvironment(f,args);
+        let got = Evaluate(f.Body,newEnv)
+        return UnwrapReturnValue(got);
+    }
+    return NewError(`not a function: ${f.Type()}`);
+}
+
+function ExtendedFunctionEnvironment(f:object.Function,args:object.Object[]):Environment{
+    let env = NewEnclosedEnvironment(f.Env);
+    for (let index = 0; index < f.Parameters.length; index++) {
+        const element = f.Parameters[index];
+        env.Set(element.Value,args[index]);
+    }
+    return env;
+}
+
+function UnwrapReturnValue(obj:object.Object):object.Object{
+    if (obj instanceof object.ReturnValue){
+        return obj.Value;
+    }
+
+    return obj;
 }
 
 function NewError(msg: string): object.Error {

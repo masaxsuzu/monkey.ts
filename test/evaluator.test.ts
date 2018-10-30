@@ -89,6 +89,26 @@ describe('ReturnObject', () => {
     });
 })
 
+describe('FunctionObject', () => {
+
+    interface tf {
+        input: string
+        want: { param:string, body: string }
+    }
+    let tests: tf[] = [
+        { input: "fn(x){ x+2 ;};", want: { param: "x", body: "(x + 2)"}},
+        { input: "fn(x){ y+2 ;};", want: { param: "x", body: "(y + 2)"}},
+    ];
+    tests.forEach(tt => {
+        let got = <object.Function>Eval(tt.input);
+        it(`${tt.input}`, () => {
+            chai.expect(got.Parameters.length).equal(1);
+            chai.expect(got.Parameters[0].Value).equal(tt.want.param);
+            chai.expect(got.Body.String()).equal(tt.want.body);
+        })
+    });
+})
+
 describe('ErrorObject', () => {
 
     let tests: test[] = [
@@ -122,6 +142,22 @@ describe('LetStatements', () => {
         })
     });
 })
+
+describe('FunctionApplication', () => {
+
+    let tests: test[] = [
+
+        { input: "let f = fn(x){return x;}; f(1);", want: { value: 1, literal: "1" }, },
+        { input: "let f = fn(){return fn(x){return 2*x;}}; f()(2);", want: { value: 4, literal: "4" }, },
+    ];
+    tests.forEach(tt => {
+        let got = <object.Integer>Eval(tt.input);
+        it(`${tt.input} -> ${tt.want.value}`, () => {
+            chai.expect(got.Value).equal(tt.want.value);
+        })
+    });
+})
+
 
 function Eval(input: string): object.Object {
     let l = new lexer.Lexer(input);
