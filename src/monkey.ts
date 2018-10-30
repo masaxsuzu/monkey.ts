@@ -3,11 +3,13 @@ import { Lexer } from "../src/lexer/lexer"
 import { TokenType } from "../src/token/token"
 import { Parser } from './parser/parser';
 import { Evaluate } from './evaluator/evaluator';
+import { NewEnvironment } from './object/environment';
 
 interface writer{
     write(data: string | Buffer, key?: readline.Key);
 }
 
+var env = NewEnvironment();
 function ep(input: string,o:writer) {
     let l = new Lexer(input);
     let p = Parser.New(l);
@@ -17,7 +19,8 @@ function ep(input: string,o:writer) {
             return;
         }
 
-        let got = Evaluate(program);
+        let got = Evaluate(program,env);
+        if(got == null){ return }
         o.write(got.Inspect());
         o.write("\n");
 }

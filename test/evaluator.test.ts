@@ -3,6 +3,7 @@ import * as lexer from "../src/lexer/lexer"
 import * as parser from "../src/parser/parser"
 import * as object from "../src/object/object"
 import * as evaluator from "../src/evaluator/evaluator"
+import { Environment, NewEnvironment } from "../src/object/environment";
 
 interface test {
     input: string
@@ -98,6 +99,7 @@ describe('ErrorObject', () => {
         { input: " return true + true;", want: { value: "unknown operator: BOOL + BOOL", literal: "" }, },
         { input: " return true + true;return 1;", want: { value: "unknown operator: BOOL + BOOL", literal: "" }, },
         { input: " if(10){if(9){return true +true;}return 1}", want: { value: "unknown operator: BOOL + BOOL", literal: "" }, },
+        { input: " let x = 1;y;", want: { value: "identifier not found: y", literal: "" }, },
     ];
     tests.forEach(tt => {
         let got = <object.Error>Eval(tt.input);
@@ -107,12 +109,27 @@ describe('ErrorObject', () => {
     });
 })
 
+describe('LetStatements', () => {
+
+    let tests: test[] = [
+
+        { input: "let a = 5;a;", want: { value: 5, literal: "5" }, },
+    ];
+    tests.forEach(tt => {
+        let got = <object.Integer>Eval(tt.input);
+        it(`${tt.input} -> ${tt.want.value}`, () => {
+            chai.expect(got.Value).equal(tt.want.value);
+        })
+    });
+})
+
 function Eval(input: string): object.Object {
     let l = new lexer.Lexer(input);
     let p = parser.Parser.New(l);
     let program = p.ToProgram();
+    let e = NewEnvironment();
     chai.expect(p.Errors().length).equal(0, ToString(p.Errors()));
-    return evaluator.Evaluate(program);
+    return evaluator.Evaluate(program,e);
 }
 function ToString(values: string[]): string {
     let s = "";
