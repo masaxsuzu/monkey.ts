@@ -34,3 +34,54 @@ As of now, these syntaxes are available.
   * "!=": "x != y" -> (x != y)
   * ">": "x > y" -> (x > y)
   * "<": "x < y" -> (x < y)
+## Examples
+* Let statement
+```
+let x = 200;
+let y = 100;
+x + y; // -> 300
+```
+* Return statement
+```
+return 200;
+let x = 100;
+3 * x; // -> 200
+```
+* If-else expression
+```
+if(1 > 0) {
+    return 100;
+} else {
+    return 200;
+} // -> 100
+```
+
+* Function literal & calling function
+```
+let f = fn(x) {
+    return x * 100;
+};
+f(10); // -> 1000
+```
+
+* Closure
+```
+let f = fn(x){
+    let z = 3 * x;
+    return fn(y){
+        z + y;
+    }
+};
+f(1)(2); // -> 5
+```
+
+  Recursive function
+```
+let fib = fn(x){
+    if(x < 2) {
+        return x;
+    }
+    return fib(x-1) + fib(x-2);
+};
+fib(6); // -> 8
+```

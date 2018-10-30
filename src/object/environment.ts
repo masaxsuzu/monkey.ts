@@ -19,13 +19,10 @@ export class Environment{
     outer:Environment
 
     Get(name:string):{value:object.Object,exist:boolean}{
-        if(!this.store.has(name)){
-            return {value:undefined,exist:false}
+        if(!this.store.has(name) && this.outer != null){
+            return this.outer.Get(name);
         }
-        if(this.outer == null){
-            return {value:this.store.get(name),exist:true};
-        }
-        return this.outer.Get(name);
+        return {value:this.store.get(name),exist:this.store.has(name)};
     }
     Set(name:string,v:object.Object){
         this.store.set(name,v);

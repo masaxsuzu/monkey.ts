@@ -65,6 +65,7 @@ export class Function{
         out += "fn";
         out += "(";
         out += params.join(", ");
+        out += ") ";
         out += "{\n";
         out += this.Body.String();
         out += "\n}";

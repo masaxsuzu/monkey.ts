@@ -45,6 +45,7 @@ export function Evaluate(node: ast.Node, e: Environment): object.Object {
         let f = new object.Function();
         f.Parameters = p;
         f.Body = body;
+        f.Env = e;
         return f;
     } else if (node instanceof ast.PrefixExpression) {
         let right = Evaluate(node.Right.Node(), e);
