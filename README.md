@@ -36,19 +36,19 @@ As of now, these syntaxes are available.
   * "<": "x < y" -> (x < y)
 ## Examples
 * Let statement
-```
+```typescript
 let x = 200;
 let y = 100;
 x + y; // -> 300
 ```
 * Return statement
-```
+```typescript
 return 200;
 let x = 100;
 3 * x; // -> 200
 ```
 * If-else expression
-```
+```typescript
 if(1 > 0) {
     return 100;
 } else {
@@ -57,7 +57,7 @@ if(1 > 0) {
 ```
 
 * Function literal & calling function
-```
+```typescript
 let f = fn(x) {
     return x * 100;
 };
@@ -65,7 +65,7 @@ f(10); // -> 1000
 ```
 
 * Closure
-```
+```typescript
 let f = fn(x){
     let z = 3 * x;
     return fn(y){
@@ -76,7 +76,7 @@ f(1)(2); // -> 5
 ```
 
 * Recursive function
-```
+```typescript
 let fib = fn(x){
     if(x < 2) {
         return x;
