@@ -4,6 +4,7 @@ export enum TokenType {
 
     IDENT = "IDENT",
     INT = "INT",
+    STRING = "STRING",
 
     ASSIGN = "=",
     PlUS = "+",

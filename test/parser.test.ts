@@ -3,9 +3,7 @@ import * as token from "../src/token/token"
 import * as lexer from "../src/lexer/lexer"
 import * as ast from "../src/ast/ast"
 import * as parser from "../src/parser/parser"
-import { EROFS } from "constants";
 import { ExpressionStatement } from "../src/ast/ast";
-
 
 class To {
     public static ProgramFrom(statements: ast.Statement[]): ast.Program {
@@ -89,12 +87,12 @@ class To {
         return b
     }
 
-    public static SimpleFunctionLiteralFrom(p1:string,p2:string,body:ast.BlockStatement):ast.FunctionLiteral{
+    public static SimpleFunctionLiteralFrom(p1: string, p2: string, body: ast.BlockStatement): ast.FunctionLiteral {
         let f = new ast.FunctionLiteral();
         f.Parameters = [];
-        f.Parameters.push(this.IdentifierFrom(new token.Token(token.TokenType.IDENT,p1),p1));
-        f.Parameters.push(this.IdentifierFrom(new token.Token(token.TokenType.IDENT,p2),p2));
-        f.Token = new token.Token(token.TokenType.FUNCTION,"fn");
+        f.Parameters.push(this.IdentifierFrom(new token.Token(token.TokenType.IDENT, p1), p1));
+        f.Parameters.push(this.IdentifierFrom(new token.Token(token.TokenType.IDENT, p2), p2));
+        f.Token = new token.Token(token.TokenType.FUNCTION, "fn");
         f.Body = body;
 
         return f;
@@ -106,7 +104,7 @@ describe('ParseLetStatements', () => {
     interface test {
         name: string;
         input: string;
-        wants: {name:string,value:string}[];
+        wants: { name: string, value: string }[];
     }
     let tests: test[] = [
         {
@@ -116,12 +114,12 @@ describe('ParseLetStatements', () => {
             let y = 10;
             let foobar = 114514;
             `,
-            wants: [{name:"x",value:"5"},{name:"y",value:"10"}, {name:"foobar",value:"114514"}]
+            wants: [{ name: "x", value: "5" }, { name: "y", value: "10" }, { name: "foobar", value: "114514" }]
         } as test,
         {
             name: "2 let statements",
             input: `let x = 114;let y = 514;`,
-            wants: [{name:"x",value:"114"},{name:"y",value:"514"}]
+            wants: [{ name: "x", value: "114" }, { name: "y", value: "514" }]
         } as test,
     ];
     tests.forEach(tt => {
@@ -253,6 +251,36 @@ describe('IntegerLiteralExpression', () => {
             let lt = <ast.IntegerLiteral>e.Expression;
             chai.expect(lt.TokenLiteral(), "literal").equal(tt.want.l);
             chai.expect(lt.Value, "value").equal(tt.want.v);
+        });
+    });
+})
+
+describe('StringLiteralExpression', () => {
+    interface test {
+        name: string
+        input: string
+        want: { l: string, v: string }
+    }
+    let tests: test[] = [
+        {
+            name: `hello world`,
+            input: `"hello world"`,
+            want: { l: "hello world", v: "hello world" },
+        } as test,
+    ];
+    tests.forEach(tt => {
+        it(`${tt.input}`, () => {
+            let l = new lexer.Lexer(tt.input);
+            let p = parser.Parser.New(l);
+            let program = p.ToProgram();
+            chai.expect(p.Errors().length).equal(0, Helper.ToString(p.Errors()));
+
+            chai.expect(program.Statements.length).equal(1);
+
+            let statement = <ExpressionStatement>program.Statements[0];
+            let str = <ast.StringLiteral>statement.Expression;
+            chai.expect(str.TokenLiteral(), "Literal").equals(tt.want.l);
+            chai.expect(str.Value, "Value").equals(tt.want.v);
         });
     });
 })
@@ -435,11 +463,11 @@ describe('FunctionLiteralParsing', () => {
     let tests: test[] = [
         {
             input: "fn ( x , y ) {x}",
-            want: To.SimpleFunctionLiteralFrom("x","y",To.SimpleBlockStatement("x")),
+            want: To.SimpleFunctionLiteralFrom("x", "y", To.SimpleBlockStatement("x")),
         },
         {
             input: "fn ( y , z ) {x}",
-            want: To.SimpleFunctionLiteralFrom("y","z",To.SimpleBlockStatement("x")),
+            want: To.SimpleFunctionLiteralFrom("y", "z", To.SimpleBlockStatement("x")),
         },
     ];
     tests.forEach(tt => {
@@ -452,7 +480,7 @@ describe('FunctionLiteralParsing', () => {
             chai.expect(program.Statements.length).equal(1);
 
             let s = <ExpressionStatement>program.Statements[0];
-            let fn= <ast.FunctionLiteral>s.Expression;
+            let fn = <ast.FunctionLiteral>s.Expression;
             chai.expect(fn.Parameters, "condition").deep.equal(tt.want.Parameters);
             chai.expect(fn.Body, "consequence").deep.equal(tt.want.Body);
 
@@ -463,12 +491,12 @@ describe('FunctionLiteralParsing', () => {
 describe('CallExpressionParsing', () => {
     interface test {
         input: string
-        want: {caller:string,args:string[]}
+        want: { caller: string, args: string[] }
     }
     let tests: test[] = [
         {
             input: "add(x , y);",
-            want: {caller:"add",args:["x","y"]},
+            want: { caller: "add", args: ["x", "y"] },
         } as test,
     ];
     tests.forEach(tt => {
@@ -481,8 +509,8 @@ describe('CallExpressionParsing', () => {
             chai.expect(program.Statements.length).equal(1);
 
             let s = <ExpressionStatement>program.Statements[0];
-            let call= <ast.CallExpression>s.Expression;
-            chai.expect(call.Function.Node().String(),"function").equals(tt.want.caller);
+            let call = <ast.CallExpression>s.Expression;
+            chai.expect(call.Function.Node().String(), "function").equals(tt.want.caller);
 
         });
     });

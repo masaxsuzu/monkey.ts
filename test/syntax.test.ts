@@ -12,6 +12,7 @@ describe('literal', () => {
         { name:"integer",input: "1", want: "1", },
         { name:"true",input: "true", want: "true", },
         { name:"false",input: "false", want: "false", },
+        { name:"string",input: `"monkey"`, want: "monkey", },
         { name:"function",input: "fn(x) {return x}", want: "fn(x) return x;", },
     ];
     tests.forEach(tt => {

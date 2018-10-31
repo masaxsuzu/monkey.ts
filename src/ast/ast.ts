@@ -1,4 +1,4 @@
-import { Token } from "../token/token"
+import { Token, TokenType } from "../token/token"
 
 export interface Node {
     TokenLiteral(): string
@@ -211,16 +211,16 @@ export class BlockStatement {
 }
 
 export class FunctionLiteral {
-    Token:Token
-    Parameters:Identifier[]
-    Body:BlockStatement
+    Token: Token
+    Parameters: Identifier[]
+    Body: BlockStatement
 
-    ExpressionNode(){}
-    Node():Node{
+    ExpressionNode() { }
+    Node(): Node {
         return this;
     }
-    TokenLiteral():string{return this.Token.Literal;}
-    String():string{
+    TokenLiteral(): string { return this.Token.Literal; }
+    String(): string {
         let out = "";
         let params = [];
         this.Parameters.forEach(param => {
@@ -237,19 +237,28 @@ export class FunctionLiteral {
     }
 }
 
-export class CallExpression{
-    Token:Token
-    Function:Expression
-    Arguments:Expression[]
+export class StringLiteral {
+    Token: Token
+    Value: string
+    Node(): Node { return this; }
+    ExpressionNode() { }
+    TokenLiteral() { return this.Token.Literal; }
+    String() { return this.Token.Literal; }
+}
 
-    ExpressionNode(){}
-    TokenLiteral():string{ return this.Token.Literal ;}
-    Node():Node{
+export class CallExpression {
+    Token: Token
+    Function: Expression
+    Arguments: Expression[]
+
+    ExpressionNode() { }
+    TokenLiteral(): string { return this.Token.Literal; }
+    Node(): Node {
         return this;
     }
-    String():string{
+    String(): string {
         let out = "";
-        let args:string[] = [];
+        let args: string[] = [];
         this.Arguments.forEach(arg => {
             args.push(arg.Node().String());
         });

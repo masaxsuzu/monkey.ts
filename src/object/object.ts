@@ -5,6 +5,7 @@ export enum Type {
     NULL_OBJ = "NULL",
     INTEGER_OBJ = "INTEGER",
     BOOL_OBJ = "BOOL",
+    STRING_OBJ = "STRING",
     RETURN_VALUE_OBJ = "RETURN_VALUE",
     FUNCTION_OBJ = "FUNCTION_VALUE",
     ERROR_OBJ = "ERROR",
@@ -43,21 +44,27 @@ export class Bool {
     }
 }
 
+export class String {
+    Value: string
+    Type(): Type { return Type.STRING_OBJ; }
+    Inspect(): string { return this.Value; }
+}
+
 export class ReturnValue {
     Value: Object
     Type(): Type { return Type.RETURN_VALUE_OBJ; }
     Inspect(): string { return this.Value.Inspect(); }
 }
 
-export class Function{
+export class Function {
     Parameters: ast.Identifier[]
     Body: ast.BlockStatement
     Env: Environment
 
-    Type():Type{return Type.FUNCTION_OBJ;}
-    Inspect():string{
+    Type(): Type { return Type.FUNCTION_OBJ; }
+    Inspect(): string {
         let out = "";
-        let params:string[] = [];
+        let params: string[] = [];
         this.Parameters.forEach(element => {
             params.push(element.String());
         });
@@ -72,10 +79,10 @@ export class Function{
         return out;
     }
 }
-export class Error{
-    Message:string
-    Type():Type{return Type.ERROR_OBJ;}
-    Inspect():string{return `ERROR: ${this.Message}`;}
+export class Error {
+    Message: string
+    Type(): Type { return Type.ERROR_OBJ; }
+    Inspect(): string { return `ERROR: ${this.Message}`; }
 }
 
 export class Null {

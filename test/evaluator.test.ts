@@ -61,6 +61,22 @@ describe('BoolObject', () => {
     });
 })
 
+describe('StringObject', () => {
+
+    let tests: test[] = [
+        { input: `if(false){10}else{"monkey"}`, want: { value: "monkey", literal: "monkey" }, },
+        { input: `"Hello" + "Monkey"`, want: { value: "HelloMonkey", literal: "HelloMonkey" }, },
+
+    ];
+    tests.forEach(tt => {
+        let got = <object.Bool>Eval(tt.input);
+        it(`${tt.input} -> ${tt.want.value}`, () => {
+            chai.expect(got.Value, "Value").equal(tt.want.value);
+            chai.expect(got.Inspect(), "Value").equal(tt.want.literal);
+        })
+    });
+})
+
 describe('NullObject', () => {
 
     let tests: test[] = [
@@ -120,6 +136,7 @@ describe('ErrorObject', () => {
         { input: " return true + true;return 1;", want: { value: "unknown operator: BOOL + BOOL", literal: "" }, },
         { input: " if(10){if(9){return true +true;}return 1}", want: { value: "unknown operator: BOOL + BOOL", literal: "" }, },
         { input: " let x = 1;y;", want: { value: "identifier not found: y", literal: "" }, },
+        { input: ` "Hello" - "Monkey";`, want: { value: "unknown operator: STRING - STRING", literal: "" }, },
     ];
     tests.forEach(tt => {
         let got = <object.Error>Eval(tt.input);

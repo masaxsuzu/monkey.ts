@@ -57,6 +57,7 @@ export class Parser {
 
         this.registerPrefix(token.TokenType.IDENT, () => { return this.parseIdentifier() });
         this.registerPrefix(token.TokenType.INT, () => { return this.parseIntegerLiteral() });
+        this.registerPrefix(token.TokenType.STRING, () => { return this.parseStringLiteral() });
         this.registerPrefix(token.TokenType.BANG, () => { return this.parsePrefixExpression() });
         this.registerPrefix(token.TokenType.MINUS, () => { return this.parsePrefixExpression() });
         this.registerPrefix(token.TokenType.TRUE, () => { return this.parseBoolean() });
@@ -197,6 +198,13 @@ export class Parser {
     private parseIntegerLiteral(): ast.IntegerLiteral {
         let l = new ast.IntegerLiteral();
         l.Value = parseInt(this.currentToken.Literal);
+        l.Token = this.currentToken;
+        return l;
+    }
+
+    private parseStringLiteral(): ast.StringLiteral {
+        let l = new ast.StringLiteral();
+        l.Value = this.currentToken.Literal;
         l.Token = this.currentToken;
         return l;
     }

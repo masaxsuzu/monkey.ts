@@ -77,6 +77,9 @@ export class Lexer {
             case "":
                 t = new Token(TokenType.EOF, current)
                 break;
+            case `"`:
+                t = new Token(TokenType.STRING,this.ReadString());
+                break;
             default:
                 // ch1p12: if call ReadXXX, then return here,
                 // because Read() is already called.
@@ -128,6 +131,17 @@ export class Lexer {
         let v = this._input.slice(pos, this._currentPosition)
 
         return v.join('')
+    }
+
+    private ReadString():string{
+        let pos = this._currentPosition + 1;
+        while (true) {
+            this.Read();
+            if(this._current == `"` || this._current == ""){
+                break;
+            }
+        }
+        return this._input.slice(pos, this._currentPosition).join('');      
     }
 
     private Peek(): string {
