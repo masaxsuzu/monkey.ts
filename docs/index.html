@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Monkey.ts</title>
+    <h1>Monkey playground</h1>
+    <script type="text/javascript" src="./src/index.js"></script>
+    <style type="text/css">
+        .intLink {
+            cursor: pointer;
+        }
+
+        img.intLink {
+            border: 0;
+        }
+
+        #text1 {
+            width: 540px;
+            height: 200px;
+            border: 1px #000000 solid;
+            padding: 12px;
+            overflow: scroll;
+        }
+
+        #text1 #sourceText {
+            padding: 0;
+            margin: 0;
+            min-width: 498px;
+            min-height: 200px;
+        }
+
+
+        #text2 {
+            width: 540px;
+            height: 200px;
+            border: 1px #000000 solid;
+            padding: 12px;
+            overflow: scroll;
+        }
+
+        #text2 #sourceText {
+            padding: 0;
+            margin: 0;
+            min-width: 498px;
+            min-height: 200px;
+        }
+
+        #run {
+            width: 40px;
+            height: 20px;
+            border: 1px #000000 solid;
+            padding: 12px;
+            overflow: scroll;
+        }
+
+        #editMode label {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <p>
+        your code:
+        <div input id="text1" contenteditable="true">
+            <p>let hello = "monkey";</p>
+        </div>
+    </p>
+    <p>
+        output:
+        <div id="text2" contenteditable="false">
+        </div>
+    </p>
+</body>
+
+</html>
