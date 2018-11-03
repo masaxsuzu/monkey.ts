@@ -32,7 +32,8 @@ onload = function () {
     src = document.getElementById('text1');
     out = document.getElementById('text2');
     run = document.getElementById('run');
-    src.onkeyup  = function () {
+    run.onclick  = function () {
+        alert("aaa");
         let got = Run(src.innerText);
         out.innerText = got; 
     }

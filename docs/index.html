@@ -3,7 +3,7 @@
 
 <head>
     <title>Monkey.ts</title>
-    <h1>Monkey playground</h1>
+    <h1>Monkey.ts playground</h1>
     <script type="text/javascript" src="./src/index.js"></script>
     <style type="text/css">
         .intLink {
@@ -44,15 +44,7 @@
             min-width: 498px;
             min-height: 200px;
         }
-
-        #run {
-            width: 40px;
-            height: 20px;
-            border: 1px #000000 solid;
-            padding: 12px;
-            overflow: scroll;
-        }
-
+        
         #editMode label {
             cursor: pointer;
         }
@@ -60,14 +52,16 @@
 </head>
 
 <body>
+    Monkey.ts is a interpreter implemented in TypeScript.
+    <a href ="https://github.com/masa-suzu/monkey.ts">github repository</a>
     <p>
-        your code:
         <div input id="text1" contenteditable="true">
             <p>let hello = "monkey";</p>
         </div>
     </p>
+    <button type="run" id="run">Run</button>
     <p>
-        output:
+        output is
         <div id="text2" contenteditable="false">
         </div>
     </p>
