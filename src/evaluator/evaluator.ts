@@ -18,14 +18,14 @@ export function Evaluate(node: ast.Node, e: Environment): object.Object {
         return Evaluate(node.Expression.Node(), e);
     } else if (node instanceof ast.LetStatement) {
         let v = Evaluate(node.Value.Node(), e);
-        if (isError(v)) {
+        if (IsError(v)) {
             return v;
         }
         e.Set(node.Name.Value, v);
 
     } else if (node instanceof ast.ReturnStatement) {
         let v = Evaluate(node.ReturnValue.Node(), e);
-        if (isError(v)) {
+        if (IsError(v)) {
             return v;
         }
         let rv = new object.ReturnValue();
@@ -36,7 +36,7 @@ export function Evaluate(node: ast.Node, e: Environment): object.Object {
     } else if (node instanceof ast.IntegerLiteral) {
         return new object.Integer(node.Value);
     } else if (node instanceof ast.Bool) {
-        return nativeBoolObject(node.Value.valueOf());
+        return NativeBoolObject(node.Value.valueOf());
     } else if (node instanceof ast.StringLiteral) {
         let s = new object.String();
         s.Value = node.Value;
@@ -53,37 +53,37 @@ export function Evaluate(node: ast.Node, e: Environment): object.Object {
         return f;
     } else if (node instanceof ast.PrefixExpression) {
         let right = Evaluate(node.Right.Node(), e);
-        if (isError(right)) {
+        if (IsError(right)) {
             return right;
         }
         return EvaluatePrefixExpression(node.Operator, right);
     } else if (node instanceof ast.InfixExpression) {
         let right = Evaluate(node.Right.Node(), e);
-        if (isError(right)) {
+        if (IsError(right)) {
             return right;
         }
         let left = Evaluate(node.Left.Node(), e);
-        if (isError(left)) {
+        if (IsError(left)) {
             return left;
         }
         return EvaluateInfixExpression(node.Operator, left, right);
     } else if (node instanceof ast.CallExpression) {
         let f = Evaluate(node.Function.Node(), e);
-        if (isError(f)) {
+        if (IsError(f)) {
             return f;
         }
         let args = EvaluateExpression(node.Arguments, e);
-        if (args.length == 1 && isError(args[0])) {
+        if (args.length == 1 && IsError(args[0])) {
             return args[0];
         }
 
-        return applyFunction(f, args);
+        return ApplyFunction(f, args);
     } else if (node instanceof ast.IfExpression) {
         let condition = Evaluate(node.Condition.Node(), e);
-        if (isError(condition)) {
+        if (IsError(condition)) {
             return condition;
         }
-        if (isTruth(condition)) {
+        if (IsTruth(condition)) {
             return Evaluate(node.Consequence, e)
         } else if (node.Alternative != null) {
             return Evaluate(node.Alternative, e);
@@ -94,7 +94,7 @@ export function Evaluate(node: ast.Node, e: Environment): object.Object {
     return null;
 }
 
-function isTruth(obj: object.Object): boolean {
+function IsTruth(obj: object.Object): boolean {
     switch (obj) {
         case NULL:
             return false;
@@ -107,7 +107,7 @@ function isTruth(obj: object.Object): boolean {
     }
 }
 
-function isError(obj: object.Object): boolean {
+function IsError(obj: object.Object): boolean {
     if (obj != null) {
         return obj.Type() == object.Type.ERROR_OBJ;
     }
@@ -159,9 +159,9 @@ function EvaluateInfixExpression(op: string, left: object.Object, right: object.
     // As now now, Bool and Null objects are constant.
     // So we can compare them by references.
     else if (op == "==") {
-        return nativeBoolObject(left == right)
+        return NativeBoolObject(left == right)
     } else if (op == "!=") {
-        return nativeBoolObject(left != right)
+        return NativeBoolObject(left != right)
     } else if (left instanceof object.String && right instanceof object.String) {
         return EvaluateStringInfixExpression(op,left,right);
     } else if (left.Type() != right.Type()) {
@@ -174,7 +174,7 @@ function EvaluateExpression(expressions: ast.Expression[], e: Environment): obje
     let results = []
     expressions.forEach(element => {
         let got = Evaluate(element.Node(), e);
-        if (isError(got)) {
+        if (IsError(got)) {
             return results;
         }
         results.push(got);
@@ -198,7 +198,7 @@ function EvaluateBlockStatement(block: BlockStatement, e: Environment): object.O
 
 }
 
-function nativeBoolObject(input: boolean): object.Bool {
+function NativeBoolObject(input: boolean): object.Bool {
     if (input) {
         return TRUE;
     }
@@ -236,13 +236,13 @@ function EvaluateIntegerInfixExpression(op: string, left: object.Integer, right:
         case "*":
             return new object.Integer(left.Value * right.Value);
         case "<":
-            return nativeBoolObject(left.Value < right.Value);
+            return NativeBoolObject(left.Value < right.Value);
         case ">":
-            return nativeBoolObject(left.Value > right.Value);
+            return NativeBoolObject(left.Value > right.Value);
         case "==":
-            return nativeBoolObject(left.Value == right.Value);
+            return NativeBoolObject(left.Value == right.Value);
         case "!=":
-            return nativeBoolObject(left.Value != right.Value);
+            return NativeBoolObject(left.Value != right.Value);
         default:
             return NewError(`unknown operator: ${left.Type()} ${op} ${right.Type()}`);
     }
@@ -259,7 +259,7 @@ function EvaluateStringInfixExpression(op: string, left: object.String, right: o
     }
 }
 
-function applyFunction(f: object.Object, args: object.Object[]): object.Object {
+function ApplyFunction(f: object.Object, args: object.Object[]): object.Object {
     if (f instanceof object.Function) {
         let newEnv = ExtendedFunctionEnvironment(f, args);
         let got = Evaluate(f.Body, newEnv)

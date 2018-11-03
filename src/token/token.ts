@@ -38,6 +38,9 @@ export enum TokenType {
 }
 
 export class Token {
+    Type: TokenType;
+    Literal: string;
+
     constructor(t: TokenType, l: string) {
         this.Type = t;
         this.Literal = l;
@@ -61,9 +64,4 @@ export class Token {
         }
         return TokenType.IDENT
     }
-
-    Type: TokenType;
-    Literal: string;
-
-
 }

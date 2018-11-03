@@ -10,7 +10,7 @@ interface writer{
 }
 
 var env = NewEnvironment();
-function ep(input: string,o:writer) {
+function Ep(input: string,o:writer) {
     let l = new Lexer(input);
     let p = Parser.New(l);
     let program = p.ToProgram();
@@ -25,10 +25,10 @@ function ep(input: string,o:writer) {
         o.write("\n");
 }
 
-function repl(rl: readline.ReadLine) {
+function Repl(rl: readline.ReadLine) {
     rl.question('monkey > ', (r: string) => {
-        ep(r,rl);
-        repl(rl);
+        Ep(r,rl);
+        Repl(rl);
     })
 }
 
@@ -38,7 +38,7 @@ function printParseErrors(errors:string[],o:writer){
     });
 }
 
-repl(readline.createInterface({
+Repl(readline.createInterface({
     input: process.stdin,
     output: process.stdout
 }))
