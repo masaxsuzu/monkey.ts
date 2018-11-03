@@ -33,7 +33,6 @@ onload = function () {
     out = document.getElementById('text2');
     run = document.getElementById('run');
     run.onclick  = function () {
-        alert("aaa");
         let got = Run(src.innerText);
         out.innerText = got; 
     }
